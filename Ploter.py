@@ -16,14 +16,14 @@ for line in lines:
         Z2[int(values[0])][int(values[1])] = float(values[3])
 
 def function(x, t):
-    return Y1[x,t]
+    return Z1[x,t]
 
 fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
 x = t = np.array(range(128))
 X, T = np.meshgrid(x, t)
 
-ax.plot_surface(X, T, Y1)
+ax.plot_surface(X, T, Z1)
 
 ax.set_xlabel('X Label')
 ax.set_ylabel('T Label')
