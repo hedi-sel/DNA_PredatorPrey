@@ -1,5 +1,6 @@
 .vscode/*
 *.exe
+*.dat
 
 !.gitignore
 !Ploter.py

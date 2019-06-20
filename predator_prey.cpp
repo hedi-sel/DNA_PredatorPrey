@@ -28,7 +28,7 @@ void writeFunction( const state_type &x , const double t )
 
 int main(int argc, char **argv)
 {
-    dataFile.open ("OutputData");
+    dataFile.open ("OutputData.dat");
     state_type x = {{ 10.0 , 1.0}}; // initial conditions
     integrate( equation , x , 0.0 , 25.0 , 0.1 , writeFunction );
     dataFile.close();

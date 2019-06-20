@@ -1,5 +1,5 @@
 /*
- * two_dimensional_phase_lattice.cpp
+ * prey_predator_system.cpp
  *
  * This example show how one can use matrices as state types in odeint.
  *
@@ -25,37 +25,48 @@
 using namespace std;
 using namespace boost::numeric::odeint;
 
-//[ two_dimensional_phase_lattice_definition
+//[ prey_predator_system_definition
 typedef boost::numeric::ublas::matrix< double > state_type;
 
-struct two_dimensional_phase_lattice
+const double dh = 1;
+const double A = 1;
+const double K = 1;
+const double delta = 1;
+const double d = 1;
+
+struct prey_predator_system
 {
-    two_dimensional_phase_lattice( double gamma = 0.5 )
+
+    prey_predator_system( double gamma = 0.5 )
     : m_gamma( gamma ) { }
 
     void operator()( const state_type &x , state_type &dxdt , double /* t */ ) const
     {
         size_t size1 = x.size1() , size2 = x.size2();
 
-        for( size_t i=1 ; i<size1-1 ; ++i )
+        for( size_t i=1 ; i<size2-1 ; ++i )
         {
-            for( size_t j=1 ; j<size2-1 ; ++j )
-            {
-                dxdt( i , j ) =
-                        coupling_func( x( i + 1 , j ) - x( i , j ) ) +
-                        coupling_func( x( i - 1 , j ) - x( i , j ) ) +
-                        coupling_func( x( i , j + 1 ) - x( i , j ) ) +
-                        coupling_func( x( i , j - 1 ) - x( i , j ) );
-            }
+            dxdt( 0 , i ) = preyFunction( x(0,i), x(1,i), laplacien(x, 0, i));
+            dxdt( 1 , i ) = predatorFunction( x(0,i), x(1,i), laplacien(x, 1, i));
         }
 
         for( size_t i=0 ; i<x.size1() ; ++i ) dxdt( i , 0 ) = dxdt( i , x.size2() -1 ) = 0.0;
         for( size_t j=0 ; j<x.size2() ; ++j ) dxdt( 0 , j ) = dxdt( x.size1() -1 , j ) = 0.0;
     }
 
-    double coupling_func( double x ) const
+    double laplacien(const state_type &x, int type, int position) const
     {
-        return sin( x ) - m_gamma * ( 1.0 - cos( x ) );
+        return (2*x(type, position) - x(type, position-1) - x(type, position+1));
+    }
+
+    double preyFunction( double n, double p, double Dn ) const
+    {
+        return A*n*(1-n/K)-(1-delta)*p*n+Dn
+;
+    }
+    double predatorFunction( double n, double p, double Dp ) const
+    {
+        return n*p - delta*p + d*Dp;
     }
 
     double m_gamma;
@@ -63,7 +74,7 @@ struct two_dimensional_phase_lattice
 //]
 
 
-struct write_for_gnuplot
+/* struct write_for_gnuplot
 {
     size_t m_every , m_count;
 
@@ -89,7 +100,7 @@ struct write_for_gnuplot
 
         ++m_count;
     }
-};
+}; */
 
 class write_snapshots
 {
@@ -147,11 +158,11 @@ int main( int argc , char **argv )
     cout << "set term x11" << endl;
     cout << "set pm3d map" << endl;
 
-    integrate_const( runge_kutta4<state_type>() , two_dimensional_phase_lattice( 1.2 ) ,
+    integrate_const( runge_kutta4<state_type>() , prey_predator_system( 1.2 ) ,
                      x , 0.0 , 1001.0 , 0.1 , boost::ref( obs ) );
 
     // controlled steppers work only after ublas bugfix
-    //integrate_const( make_dense_output< runge_kutta_dopri5< state_type > >( 1E-6 , 1E-6 ) , two_dimensional_phase_lattice( 1.2 ) ,
+    //integrate_const( make_dense_output< runge_kutta_dopri5< state_type > >( 1E-6 , 1E-6 ) , prey_predator_system( 1.2 ) ,
     //        x , 0.0 , 1001.0 , 0.1 , boost::ref( obs ) );
 
 
