@@ -61,8 +61,7 @@ struct prey_predator_system
 
     double preyFunction( double n, double p, double Dn ) const
     {
-        return A*n*(1-n/K)-(1-delta)*p*n+Dn
-;
+        return A*n*(1-n/K)-(1-delta)*p*n+Dn;
     }
     double predatorFunction( double n, double p, double Dp ) const
     {
@@ -71,8 +70,6 @@ struct prey_predator_system
 
     double m_gamma;
 };
-//]
-
 
 /* struct write_for_gnuplot
 {
@@ -116,13 +113,13 @@ public:
         if( it != m_snapshots.end() )
         {
             ofstream fout( it->second.c_str() );
+            fout << x.size1() << "\t" << x.size2() << "\n";
             for( size_t i=0 ; i<x.size1() ; ++i )
             {
                 for( size_t j=0 ; j<x.size2() ; ++j )
                 {
-                    fout << i << "\t" << j << "\t" << x( i , j ) << "\t" << sin( x( i , j ) ) << "\n";
+                    fout << i << "\t" << j << "\t" << x( i , j ) << "\n";
                 }
-                fout << "\n";
             }
         }
         ++m_count;
@@ -140,31 +137,31 @@ private:
 
 int main( int argc , char **argv )
 {
-    size_t size1 = 128 , size2 = 128;
+    size_t size1 = 2 , size2 = 128;
     state_type x( size1 , size2 , 0.0 );
 
-    for( size_t i=(size1/2-10) ; i<(size1/2+10) ; ++i )
+    for( size_t i=0 ; i<size1 ; ++i )
         for( size_t j=(size2/2-10) ; j<(size2/2+10) ; ++j )
-            x( i , j ) = static_cast<double>( rand() ) / RAND_MAX * 2.0 * M_PI;
+            x( i , j ) = 10 * (5.0 - std::abs(static_cast<double>(j - size2/2)))*
+                    (5.0 - std::abs(static_cast<double>(i - size1/2)));
 
     write_snapshots snapshots;
     snapshots.snapshots().insert( make_pair( size_t( 0 ) , string( "lat_0000.dat" ) ) );
     snapshots.snapshots().insert( make_pair( size_t( 100 ) , string( "lat_0100.dat" ) ) );
-    snapshots.snapshots().insert( make_pair( size_t( 1000 ) , string( "lat_1000.dat" ) ) );
     observer_collection< state_type , double > obs;
-    obs.observers().push_back( write_for_gnuplot( 10 ) );
+    // obs.observers().push_back( write_for_gnuplot( 10 ) );
     obs.observers().push_back( snapshots );
 
-    cout << "set term x11" << endl;
-    cout << "set pm3d map" << endl;
+    cout << "Setup done, starting computation" << endl;
 
     integrate_const( runge_kutta4<state_type>() , prey_predator_system( 1.2 ) ,
-                     x , 0.0 , 1001.0 , 0.1 , boost::ref( obs ) );
+                     x , 0.0 , 101.0 , 0.1 , boost::ref( obs ) );
 
     // controlled steppers work only after ublas bugfix
     //integrate_const( make_dense_output< runge_kutta_dopri5< state_type > >( 1E-6 , 1E-6 ) , prey_predator_system( 1.2 ) ,
     //        x , 0.0 , 1001.0 , 0.1 , boost::ref( obs ) );
 
+    cout << "Fini" << endl;
 
     return 0;
 }
