@@ -28,11 +28,25 @@ using namespace boost::numeric::odeint;
 //[ prey_predator_system_definition
 typedef boost::numeric::ublas::matrix< double > state_type;
 
-const double dh = 1;
-const double A = 1;
-const double K = 1;
-const double delta = 1;
-const double d = 1;
+const double k1 = 0.003;
+const double k2 = 0.004;
+const double kn = 0.01;
+const double kp = 0.004;
+const double b = 6.0e-5;
+const double Kmp = 34.0;
+const double pol = 1.7;
+const double exo = 25.0;
+const double G = 140.0;
+const double Dp = 2000.0;
+const double tc = 1 / (k2 * pol * Kmp);
+const double g = k1 * G / (k2 * Kmp);
+const double B = b * k2 * Kmp * Kmp / k1;
+const double l = kn / kp;
+const double delta = (exo / pol) * (kp / k2 / Kmp);
+const double A = g - l * delta;
+const double K = (g - l * delta) / (B * g * g);
+const double d = 1;//TODO
+const double dh = 1e-1;//TODO
 
 struct prey_predator_system
 {
@@ -43,25 +57,23 @@ struct prey_predator_system
     void operator()( const state_type &x , state_type &dxdt , double /* t */ ) const
     {
         size_t size1 = x.size1() , size2 = x.size2();
-
-        for( size_t i=1 ; i<size2-1 ; ++i )
+        for (size_t j = 1; j < size2 - 1; ++j)
         {
-            dxdt( 0 , i ) = preyFunction( x(0,i), x(1,i), laplacien(x, 0, i));
-            dxdt( 1 , i ) = predatorFunction( x(0,i), x(1,i), laplacien(x, 1, i));
+            dxdt(0, j) = preyFunction(x(0, j), x(1, j), laplacien(x, 0, j));
+            dxdt(1, j) = predatorFunction(x(0, j), x(1, j), laplacien(x, 1, j));
         }
 
         for( size_t i=0 ; i<x.size1() ; ++i ) dxdt( i , 0 ) = dxdt( i , x.size2() -1 ) = 0.0;
-        for( size_t j=0 ; j<x.size2() ; ++j ) dxdt( 0 , j ) = dxdt( x.size1() -1 , j ) = 0.0;
     }
 
     double laplacien(const state_type &x, int type, int position) const
     {
-        return (2*x(type, position) - x(type, position-1) - x(type, position+1));
+        return (2.0*x(type, position) - x(type, position-1) - x(type, position+1.0));
     }
 
     double preyFunction( double n, double p, double Dn ) const
     {
-        return A*n*(1-n/K)-(1-delta)*p*n+Dn;
+        return A*n*(1-n/K)-(1-delta*l)*p*n+Dn;
     }
     double predatorFunction( double n, double p, double Dp ) const
     {
@@ -70,34 +82,6 @@ struct prey_predator_system
 
     double m_gamma;
 };
-
-/* struct write_for_gnuplot
-{
-    size_t m_every , m_count;
-
-    write_for_gnuplot( size_t every = 10 )
-    : m_every( every ) , m_count( 0 ) { }
-
-    void operator()( const state_type &x , double t )
-    {
-        if( ( m_count % m_every ) == 0 )
-        {
-            clog << t << endl;
-            cout << "sp '-'" << endl;
-            for( size_t i=0 ; i<x.size1() ; ++i )
-            {
-                for( size_t j=0 ; j<x.size2() ; ++j )
-                {
-                    cout << i << "\t" << j << "\t" << sin( x( i , j ) ) << "\n";
-                }
-                cout << "\n";
-            }
-            cout << "e" << endl;
-        }
-
-        ++m_count;
-    }
-}; */
 
 class write_snapshots
 {
@@ -140,22 +124,24 @@ int main( int argc , char **argv )
     size_t size1 = 2 , size2 = 128;
     state_type x( size1 , size2 , 0.0 );
 
-    for( size_t i=0 ; i<size1 ; ++i )
-        for( size_t j=(size2/2-10) ; j<(size2/2+10) ; ++j )
-            x( i , j ) = 10 * (5.0 - std::abs(static_cast<double>(j - size2/2)))*
-                    (5.0 - std::abs(static_cast<double>(i - size1/2)));
+    for( size_t j=(size2/2-10) ; j<(size2/2+10) ; ++j )
+        x( 0 , j ) = (1.0 - (j - size2/2) * (j - size2/2)/100.0)/1000.0;
 
     write_snapshots snapshots;
-    snapshots.snapshots().insert( make_pair( size_t( 0 ) , string( "lat_0000.dat" ) ) );
-    snapshots.snapshots().insert( make_pair( size_t( 100 ) , string( "lat_0100.dat" ) ) );
-    observer_collection< state_type , double > obs;
-    // obs.observers().push_back( write_for_gnuplot( 10 ) );
+    auto snap = [&snapshots](int n) {
+        ostringstream stream;
+        stream << "data/lat_" << n << ".dat";
+        snapshots.snapshots().insert(make_pair(size_t(n), stream.str()));
+    };
+    snap(0);
+    for (int i = 1; i<5; i++) snap(i);
+    observer_collection<state_type, double> obs;
     obs.observers().push_back( snapshots );
 
     cout << "Setup done, starting computation" << endl;
 
-    integrate_const( runge_kutta4<state_type>() , prey_predator_system( 1.2 ) ,
-                     x , 0.0 , 101.0 , 0.1 , boost::ref( obs ) );
+    integrate_const(runge_kutta4<state_type>(), prey_predator_system(1.2),
+                    x, 0.0, 10.0, 0.01, boost::ref(obs));
 
     // controlled steppers work only after ublas bugfix
     //integrate_const( make_dense_output< runge_kutta_dopri5< state_type > >( 1E-6 , 1E-6 ) , prey_predator_system( 1.2 ) ,

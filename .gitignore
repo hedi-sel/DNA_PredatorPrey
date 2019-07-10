@@ -1,8 +1,3 @@
 .vscode/*
 *.exe
 *.dat
-
-!.gitignore
-!Ploter.py
-!predator_prey.cpp
-!two_dimensional_phase_lattice.cpp
