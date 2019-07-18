@@ -1,1 +1,6 @@
-https://pubs.acs.org/doi/pdfplus/10.1021/bi035203p
+#https://pubs.acs.org/doi/pdfplus/10.1021/bi035203p
+#bulrich-stoer controlled stepper, instead of runge-kutta4(runge_kutta_doppri15<double>)
+#essayer les equations non taylorees
+GPU
+Stepper with Armadillo
+Reparer le bug qui fait qu'on peut pas avoir les deux predator prey systems en meme temps
