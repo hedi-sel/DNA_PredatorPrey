@@ -1,7 +1,7 @@
 #include <iostream>
 
-//#include "predator_prey_system.hpp"
-#include "predator_prey_system_gpu.hpp"
+#include "predator_prey_system.hpp"
+//#include "predator_prey_system_gpu.hpp"
 #include "writeSnapshots.hpp"
 
 #include <omp.h>
@@ -46,8 +46,8 @@ int main(int argc, char **argv)
 
     cpu_timer timer;
 
-    integrate_adaptive(make_controlled(1E-6, 1E-6, runge_kutta_dopri5<state_type>()), prey_predator_system_gpu(1.2),
-                       x, 0.0, 10.0 + dt, dt, boost::ref(obs));
+    integrate_adaptive(make_controlled(1E-6, 1E-6, runge_kutta_dopri5<state_type>()), prey_predator_system(1.2),
+                       x, 0.0, 100.0 + dt, dt, boost::ref(obs));
 
     /* integrate_n_steps(runge_kutta4<state_type, openmp_range_algebra>(), prey_predator_system_gpu(1.2),
                       x, 0.0, 0.01, 100); */

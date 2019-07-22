@@ -4,3 +4,4 @@
 GPU
 Stepper with Armadillo
 Reparer le bug qui fait qu'on peut pas avoir les deux predator prey systems en meme temps
+Trouver un sens a ma vie

@@ -85,11 +85,17 @@ int main( int argc , char **argv )
 
     cpu_timer timer;
     //[phase_chain_integrate
-    integrate_n_steps( stepper_type() , phase_chain( 1.2 ) ,
-                       x , 0.0 , 0.01 , 100 );
+    integrate_n_steps(runge_kutta4<state_type, double, state_type, double>(), phase_chain(1.2),
+                      x, 0.0, 0.01, 100);
     //]
     double run_time = static_cast<double>(timer.elapsed().wall) * 1.0e-9;
-    std::cout << run_time << "s" << std::endl;
+
+    cpu_timer timer_gpu;
+    integrate_n_steps(stepper_type(), phase_chain(1.2), x, 0.0, 0.01, 100);
+    double run_time_gpu = static_cast<double>(timer_gpu.elapsed().wall) * 1.0e-9;
+
+    std::cout << "Single thread:" << run_time << "s" << std::endl;
+    std::cout << "Multi thread:" << run_time_gpu << "s" << std::endl;
     //copy(x.begin(), x.end(), ostream_iterator<double>(cout, "\n"));
 
     return 0;
