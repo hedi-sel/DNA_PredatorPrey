@@ -1,8 +1,7 @@
 .vscode/*
-|.vscode/tasks.json
 .vs/*
 .pytest_cache/*
-./ploter/*
+ploter/*
 |ploter/Ploter.py
 *.exe
 *.dat

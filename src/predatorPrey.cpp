@@ -1,7 +1,7 @@
 #include <iostream>
 
 #include "predator_prey_system.hpp"
-//#include "predator_prey_system_gpu.hpp"
+#include "predator_prey_system_gpu.hpp"
 #include "writeSnapshots.hpp"
 
 #include <omp.h>
@@ -33,7 +33,7 @@ int main(int argc, char **argv)
     write_snapshots snapshots;
     auto snap = [&snapshots](int n) {
         ostringstream stream;
-        stream << "/home/hedi/Documents/Predator_Prey/output/lat_" << n << ".dat";
+        stream << "output/lat_" << n << ".dat";
         snapshots.snapshots().insert(make_pair(size_t(n), stream.str()));
     };
     snap(0);
