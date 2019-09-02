@@ -4,7 +4,7 @@
 
 #include <boost/numeric/odeint.hpp>
 
-typedef boost::numeric::ublas::matrix<double> state_type;
+typedef boost::numeric::ublas::matrix<double> matrix;
 
 using namespace std;
 
@@ -15,7 +15,7 @@ public:
 
 	write_snapshots(void) : m_count(0) {}
 
-	void operator()(const state_type &x, double t)
+	void operator()(const matrix &x, double t)
 	{
 		map<size_t, string>::const_iterator it = m_snapshots.find(m_count);
 		if (it != m_snapshots.end())

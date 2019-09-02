@@ -57,7 +57,7 @@ int main( int argc , char **argv )
 
     int chunk_size = N/omp_get_max_threads();
     omp_set_schedule( omp_sched_static , chunk_size );
-
+    
     cpu_timer timer;
     integrate_n_steps(runge_kutta4<state_type, double, state_type, double>(), phase_chain(1.2),
                       x, 0.0, 0.01, 100);

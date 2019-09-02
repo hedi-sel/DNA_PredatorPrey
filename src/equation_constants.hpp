@@ -3,7 +3,8 @@
 
 using namespace boost::numeric::odeint;
 
-typedef boost::numeric::ublas::matrix<double> state_type;
+typedef boost::numeric::ublas::matrix<double> matrix;
+
 
 const double k1 = 0.003;
 const double k2 = 0.004;
@@ -28,7 +29,7 @@ const double dt = 0.01; //TODO
 const double C = 1.3;
 const double testvql = -(C * C + delta) * B * g * g + g;
 
-double laplacien(const state_type &x, int type, int position)
+double laplacien(const matrix &x, int type, int position)
 {
 	return (-2.0 * x(type, position) + x(type, position - 1) + x(type, position + 1)) / (dh * dh);
 }

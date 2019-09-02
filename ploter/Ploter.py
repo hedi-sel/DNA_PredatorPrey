@@ -40,7 +40,7 @@ def plotAndPrintData(fileName):
     #for i in range(0,shape[0]):
     plt.plot(X, Z[0, :],label = 'Prey')
     plt.plot(X, Z[1, :],label = 'Predator')
-    plt.savefig(printLocation+fileName+".png")
+    plt.savefig(printLocation+fileName.replace(".dat",".png"))
     plt.close()
 
 for file in os.listdir("./ploter"):

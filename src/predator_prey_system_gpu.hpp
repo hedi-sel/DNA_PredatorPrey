@@ -1,4 +1,4 @@
-#include "equation_constants.hpp"
+#include "predator_prey_system.hpp"
 
 class prey_predator_system_gpu
 {
@@ -6,7 +6,7 @@ public:
 	prey_predator_system_gpu(double gamma = 0.5)
 			: m_gamma(gamma) {}
 
-	void operator()(const state_type &x, state_type &dxdt, double /* t */) const
+	void operator()(const matrix &x, matrix &dxdt, double /* t */) const
 	{
 		size_t size1 = x.size1(), size2 = x.size2();
 		#pragma omp parallel for schedule(runtime)
