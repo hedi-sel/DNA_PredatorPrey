@@ -1,4 +1,4 @@
-#include "equation_constants.hpp"
+#include "../equation_constants.hpp"
 
 class prey_predator_system
 {
@@ -6,7 +6,7 @@ public:
 	prey_predator_system(double gamma = 0.5)
 			: m_gamma(gamma) {}
 
-	void operator()(const matrix &x, matrix &dxdt, double /* t */) const
+	void operator()(const matrix &x, matrix &dxdt, double) const
 	{
 		size_t size1 = x.size1(), size2 = x.size2();
 		for (size_t j = 1; j < size2 - 1; ++j)
@@ -20,5 +20,7 @@ public:
 	}
 
 private:
+
+
 	double m_gamma;
 };

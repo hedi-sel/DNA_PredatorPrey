@@ -3,8 +3,8 @@
 #include <stdio.h>
 #include <boost/filesystem.hpp>
 
-/* #include "predator_prey_system.hpp" */
-#include "predator_prey_system_gpu.hpp"
+/* #include "PdeSystem/predator_prey_system.hpp" */
+#include "PdeSystem/predator_prey_system_gpu.hpp"
 #include "writeSnapshots.hpp"
 
 #include <omp.h>
@@ -14,8 +14,6 @@
 
 using boost::timer::cpu_timer;
 using namespace std;
-
-//Dis iz master branch
 
 int main(int argc, char **argv)
 {
@@ -58,7 +56,7 @@ int main(int argc, char **argv)
     int chunk_size = size2/omp_get_max_threads();
     omp_set_schedule( omp_sched_static , chunk_size );
     integrate_adaptive(make_controlled(1E-6, 1E-6, runge_kutta_dopri5<matrix>()), prey_predator_system_gpu(1.2),
-                       x, 0.0, 200.0, dt);
+                       x, 0.0, 2000.0, dt);
     double run_time_gpu = static_cast<double>(timer_gpu.elapsed().wall) * 1.0e-9;
 
 
@@ -67,10 +65,9 @@ int main(int argc, char **argv)
 
     cpu_timer timer;
     integrate_adaptive(make_controlled(1E-6, 1E-6, runge_kutta_dopri5<matrix>()), prey_predator_system(1.2),
-                       x, 0.0, 200.0, dt, boost::ref(obs));
+                       x, 0.0, 2000.0, dt, boost::ref(obs));
     double run_time = static_cast<double>(timer.elapsed().wall) * 1.0e-9;
-
-
+    
     cout << "Ended computation in: " << endl;
     std::cout << " -Single thread: " << run_time << "s" << std::endl;
     std::cout << " -Multi thread(" << omp_get_max_threads() << "): " << run_time_gpu << "s" << std::endl;
