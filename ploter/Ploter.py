@@ -35,7 +35,7 @@ def plotAndPrintData(fileName):
         values = readLine(line)
         Z[values[0]][values[1]] = values[2]
 
-    X = np.linspace(0, 127, 128)
+    X = np.linspace(1, shape[1], shape[1])
 
     #for i in range(0,shape[0]):
     plt.plot(X, Z[0, :],label = 'Prey')
