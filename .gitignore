@@ -1,7 +1,12 @@
 .vscode/*
 .vs/*
 .pytest_cache/*
+
 ploter/*
 |ploter/Ploter.py
-*.exe
-*.dat
+
+run/*
+output/*
+
+src/bin/*
+CMake/*
