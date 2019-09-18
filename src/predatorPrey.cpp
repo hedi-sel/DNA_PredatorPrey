@@ -17,6 +17,8 @@ using namespace std;
 
 int main(int argc, char **argv)
 {
+    std::cout << boost::filesystem::current_path() <<std::endl;
+    string outputPath = "../output";
     size_t size1 = 2, size2 = 1024;
     matrix x(size1, size2, 0.0);
 
@@ -34,9 +36,9 @@ int main(int argc, char **argv)
         x(1, j) = (1.0 - (j - centerPred) * (j - centerPred) / float(widthRabb * widthRabb)) * maxPred;
 
     write_snapshots snapshots;
-    auto snap = [&snapshots](int n) {
+    auto snap = [&snapshots, &outputPath](int n) {
         ostringstream stream;
-        stream << "output/pop_" << double(n)*dt << "s.dat";
+        stream << outputPath << "/pop_" << double(n)*dt << "s.dat";
         snapshots.snapshots().insert(make_pair(size_t(n), stream.str()));
     };
     snap(0);
@@ -45,7 +47,7 @@ int main(int argc, char **argv)
     observer_collection<matrix, double> obs;
     obs.observers().push_back(snapshots);
 
-    boost::filesystem::path p("output/");
+    boost::filesystem::path p(outputPath);
     boost::filesystem::directory_iterator it(p);
     for (const auto & entry : it)
         remove(entry.path());
