@@ -14,7 +14,7 @@ include_directories("${PROJECT_SOURCE_DIR}")
 include_directories("C:/ProgrammingTools/boost_1_70_0/include/boost-1_70/")
 link_directories("C:/ProgrammingTools/boost_1_70_0/lib/")
 
-add_executable(predatorPrey predatorPrey.cpp)
+add_executable(predatorPrey predatorPrey.cpp PdeSystem/predator_prey_system.cpp PdeSystem/predator_prey_system.cpp basic_computation_functions.cpp)
 target_link_libraries(predatorPrey boost_timer-mgw81-mt-x32-1_70.a)
 target_link_libraries(predatorPrey boost_chrono-mgw81-mt-x32-1_70.a)
 target_link_libraries(predatorPrey boost_filesystem-mgw81-mt-d-x32-1_70.a)

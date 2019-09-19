@@ -1,8 +1,9 @@
-#include "predator_prey_system.hpp"
+#include "predator_prey_system_gpu.hpp"
 #include "../basic_computation_functions.hpp"
 
-void prey_predator_system::operator()(const matrix &x, matrix &dxdt, double /* t */) const{
+void prey_predator_system_gpu::operator()(const matrix &x, matrix &dxdt, double /* t */) const{
 	size_t size1 = x.size1(), size2 = x.size2();
+	#pragma omp parallel for schedule(runtime)
 	for (size_t j = 1; j < size2 - 1; ++j)
 	{
 		dxdt(0, j) = preyFunction(x(0, j), x(1, j), laplacien(x, 0, j));

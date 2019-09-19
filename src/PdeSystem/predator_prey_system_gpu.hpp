@@ -1,4 +1,7 @@
-#include "predator_prey_system.hpp"
+#include <iostream>
+#include <boost/numeric/odeint.hpp>
+using namespace boost::numeric::odeint;
+typedef boost::numeric::ublas::matrix<double> matrix;
 
 class prey_predator_system_gpu
 {
@@ -6,19 +9,7 @@ public:
 	prey_predator_system_gpu(double gamma = 0.5)
 			: m_gamma(gamma) {}
 
-	void operator()(const matrix &x, matrix &dxdt, double /* t */) const
-	{
-		size_t size1 = x.size1(), size2 = x.size2();
-		#pragma omp parallel for schedule(runtime)
-		for (size_t j = 1; j < size2 - 1; ++j)
-		{
-			dxdt(0, j) = preyFunction(x(0, j), x(1, j), laplacien(x, 0, j));
-			dxdt(1, j) = predatorFunction(x(0, j), x(1, j), laplacien(x, 1, j));
-		}
-
-		for (size_t i = 0; i < x.size1(); ++i)
-			dxdt(i, 0) = dxdt(i, x.size2() - 1) = 0.0;
-	}
+	void operator()(const matrix &x, matrix &dxdt, double /* t */) const;
 
 private:
 	double m_gamma;
