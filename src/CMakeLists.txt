@@ -5,7 +5,7 @@ cmake_minimum_required(VERSION 3.15)
 project(PredatorPrey)
 
 # Set the output folder where your program will be created
-set(CMAKE_BINARY_DIR ${CMAKE_SOURCE_DIR}/bin)
+#set(CMAKE_BINARY_DIR ${CMAKE_SOURCE_DIR}/../CMake/bin)
 set(PROJECT_DIR ${CMAKE_SOURCE_DIR}/../)
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_DIR}/run)
 
