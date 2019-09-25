@@ -20,7 +20,5 @@ public:
 	}
 
 private:
-
-
 	double m_gamma;
 };

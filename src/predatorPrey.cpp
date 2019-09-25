@@ -70,7 +70,7 @@ int main(int argc, char **argv)
                        x, 0.0, 200.0, dt, boost::ref(obs));
     double run_time = static_cast<double>(timer.elapsed().wall) * 1.0e-9;
 
-    
+
     cout << "Ended computation in: " << endl;
     std::cout << " -Single thread: " << run_time << "s" << std::endl;
     std::cout << " -Multi thread(" << omp_get_max_threads() << "): " << run_time_gpu << "s" << std::endl;
