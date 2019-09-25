@@ -17,7 +17,7 @@ include_directories("${PROJECT_SOURCE_DIR}")
 include_directories(${BOOST_ROOT})
 link_directories(${LD_LIBRARY_PATH})
 
-add_executable(predatorPrey predatorPrey.cpp PdeSystem/predator_prey_system.cpp PdeSystem/predator_prey_system.cpp basic_computation_functions.cpp)
+add_executable(predatorPrey predatorPrey.cpp PdeSystem/predator_prey_system.cpp PdeSystem/predator_prey_system_gpu.cpp basic_computation_functions.cpp)
 target_link_libraries(predatorPrey boost_timer)
 target_link_libraries(predatorPrey boost_chrono)
 target_link_libraries(predatorPrey boost_filesystem)
