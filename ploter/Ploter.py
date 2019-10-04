@@ -16,13 +16,14 @@ def readLine(line):
             values.append(int(str))
     return values
 
+
 def plotAndPrintData(fileName):
     f = open(dataLocation+fileName, "r")
     lines = f.readlines()
 
     """
     Expected format for the file is
-    im  jm
+    shape (ex: 2 1024)
     0	0	val
     ..
     i	j	val
@@ -33,15 +34,25 @@ def plotAndPrintData(fileName):
     Z = np.zeros(shape)
     for line in lines:
         values = readLine(line)
-        Z[values[0]][values[1]] = values[2]
+        z = values.pop()
+        Z[tuple(values)] = z
 
-    X = np.linspace(1, shape[1], shape[1])
+    if (len(shape) == 2):
+        X = np.linspace(1, shape[1], shape[1])
+        plt.plot(X, Z[0, :], label='Prey')
+        plt.plot(X, Z[1, :], label='Predator')
+    elif (len(shape) == 3):
+        X = np.outer(np.linspace(0, shape[1]-1, shape[1]), np.ones(shape[2]))
+        Y = np.outer(np.ones(shape[1]), np.linspace(0, shape[2]-1, shape[2]))
+        ax = plt.figure().add_subplot(111, projection='3d')
+        ax.plot_surface(X,Y,Z)
 
-    #for i in range(0,shape[0]):
-    plt.plot(X, Z[0, :],label = 'Prey')
-    plt.plot(X, Z[1, :],label = 'Predator')
-    plt.savefig(printLocation+fileName.replace(".dat",".png"))
+    else:
+        return
+
+    plt.savefig(printLocation+fileName.replace(".dat", ".png"))
     plt.close()
+
 
 for file in os.listdir("./ploter"):
     if file != os.path.basename(__file__):

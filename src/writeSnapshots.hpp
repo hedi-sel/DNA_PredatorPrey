@@ -11,7 +11,7 @@ using namespace std;
 class write_snapshots
 {
 public:
-	typedef std::map<size_t, std::string> map_type;
+    typedef std::map<size_t, std::string> map_type;
 
 	write_snapshots(void) : m_count(0) {}
 

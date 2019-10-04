@@ -20,8 +20,8 @@ using namespace std;
 int main(int argc, char **argv)
 {
     std::cout << boost::filesystem::current_path() << std::endl;
-    string outputPath = "../output";
-    size_t size1 = 2, size2 = 1024;
+    string outputPath = "output";
+    size_t size1 = 2, size2 = 300;
     matrix x(size1, size2, 0.0);
 
     int centerRabb = 10;
@@ -54,6 +54,8 @@ int main(int argc, char **argv)
     for (const auto & entry : it)
         remove(entry.path());
 
+    printf("There are % d devices and % d threads \n",
+           omp_get_num_devices(), omp_get_max_threads());
     cout << "Setup done, starting computation" << endl;
 
     cpu_timer timer_gpu;
