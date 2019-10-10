@@ -1,8 +1,8 @@
-cmake_minimum_required(VERSION 3.15)
+cmake_minimum_required(VERSION 3.0)
 
 # set(CMAKE_VERBOSE_MAKEFILE ON)
 
-project(PredatorPrey)
+project(PredatorPrey LANGUAGES CXX)
 
 # Set the output folder where your program will be created
 #set(CMAKE_BINARY_DIR ${CMAKE_SOURCE_DIR}/../CMake/bin)
@@ -11,6 +11,11 @@ set(EXECUTABLE_OUTPUT_PATH ${PROJECT_DIR}/run)
 
 set(BOOST_ROOT $ENV{BOOST_ROOT})
 set(LD_LIBRARY_PATH ${BOOST_ROOT}/stage/lib)
+
+set (CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_COMPILER "clang++")
+set(CMAKE_VERBOSE_MAKEFILE ON)
+
 
 # The following folder will be included
 include_directories("${PROJECT_SOURCE_DIR}")

@@ -9,7 +9,7 @@
 
 #include "writeSnapshots.hpp"
 
-//#include <omp.h>
+#include <omp.h>
 #include <boost/numeric/odeint.hpp>
 #include <boost/numeric/odeint/external/openmp/openmp.hpp>
 #include <boost/timer/timer.hpp>

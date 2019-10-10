@@ -4,9 +4,8 @@
 
 ploter/*
 |ploter/Ploter.py
-
 run/*
 output/*
-
+tests/*
 src/bin/*
 CMake/*
