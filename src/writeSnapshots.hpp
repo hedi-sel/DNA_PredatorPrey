@@ -4,7 +4,7 @@
 
 #include <boost/numeric/odeint.hpp>
 
-typedef boost::numeric::ublas::matrix<double> matrix;
+typedef std::vector<double> matrix;
 
 using namespace std;
 

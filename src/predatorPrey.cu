@@ -9,7 +9,13 @@
 
 #include "writeSnapshots.hpp"
 
+<<<<<<< HEAD
+<<<<<<< HEAD:src/predatorPrey.cpp
 #include <omp.h>
+=======
+>>>>>>> commiting cuda stuff that doesnt work:src/predatorPrey.cu
+=======
+>>>>>>> 39011cd5c1111e3bf02cf97a6ff0a4b2dbb14764
 #include <boost/numeric/odeint.hpp>
 #include <boost/numeric/odeint/external/openmp/openmp.hpp>
 #include <boost/timer/timer.hpp>
@@ -20,8 +26,8 @@ using namespace std;
 int main(int argc, char **argv)
 {
     std::cout << boost::filesystem::current_path() << std::endl;
-    string outputPath = "./output";
-    size_t size1 = 2, size2 = 1024;
+    string outputPath = "output";
+    size_t size1 = 2, size2 = 2048;
     matrix x(size1, size2, 0.0);
 
     int centerRabb = 10;
@@ -53,12 +59,10 @@ int main(int argc, char **argv)
     boost::filesystem::directory_iterator it(p);
     for (const auto & entry : it)
         remove(entry.path());
-
+        
     cout << "Setup done, starting computation" << endl;
 
     cpu_timer timer_gpu;
-    int chunk_size = size2/omp_get_max_threads();
-    omp_set_schedule( omp_sched_static , chunk_size );
     integrate_adaptive(make_controlled(1E-6, 1E-6, runge_kutta_dopri5<matrix>()), prey_predator_system_gpu(1.2),
                        x, 0.0, 200.0, dt);
     double run_time_gpu = static_cast<double>(timer_gpu.elapsed().wall) * 1.0e-9;
