@@ -1,0 +1,36 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/anthony/Documents/Hedi/DNA_PredatorPrey/src/cudaLinking/particle.cu
+particle.h
+/home/anthony/Documents/Hedi/DNA_PredatorPrey/src/cudaLinking/particle.h
+
+/home/anthony/Documents/Hedi/DNA_PredatorPrey/src/cudaLinking/particle.h
+v3.h
+/home/anthony/Documents/Hedi/DNA_PredatorPrey/src/cudaLinking/v3.h
+
+/home/anthony/Documents/Hedi/DNA_PredatorPrey/src/cudaLinking/play.cu
+particle.h
+/home/anthony/Documents/Hedi/DNA_PredatorPrey/src/cudaLinking/particle.h
+play.h
+/home/anthony/Documents/Hedi/DNA_PredatorPrey/src/cudaLinking/play.h
+stdlib.h
+-
+stdio.h
+-
+
+/home/anthony/Documents/Hedi/DNA_PredatorPrey/src/cudaLinking/play.h
+
+/home/anthony/Documents/Hedi/DNA_PredatorPrey/src/cudaLinking/v3.cu
+v3.h
+/home/anthony/Documents/Hedi/DNA_PredatorPrey/src/cudaLinking/v3.h
+math.h
+-
+
+/home/anthony/Documents/Hedi/DNA_PredatorPrey/src/cudaLinking/v3.h
+

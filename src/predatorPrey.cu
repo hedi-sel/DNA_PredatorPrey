@@ -9,13 +9,6 @@
 
 #include "writeSnapshots.hpp"
 
-<<<<<<< HEAD
-<<<<<<< HEAD:src/predatorPrey.cpp
-#include <omp.h>
-=======
->>>>>>> commiting cuda stuff that doesnt work:src/predatorPrey.cu
-=======
->>>>>>> 39011cd5c1111e3bf02cf97a6ff0a4b2dbb14764
 #include <boost/numeric/odeint.hpp>
 #include <boost/numeric/odeint/external/openmp/openmp.hpp>
 #include <boost/timer/timer.hpp>

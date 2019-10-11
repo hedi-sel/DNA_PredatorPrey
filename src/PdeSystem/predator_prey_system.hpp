@@ -1,7 +1,7 @@
 #include <iostream>
 #include <boost/numeric/odeint.hpp>
 using namespace boost::numeric::odeint;
-typedef std::vector<double> matrix;
+typedef boost::numeric::ublas::matrix<double> matrix;
 
 class prey_predator_system
 {

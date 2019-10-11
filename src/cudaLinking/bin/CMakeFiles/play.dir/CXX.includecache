@@ -1,0 +1,18 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/anthony/Documents/Hedi/DNA_PredatorPrey/src/cudaLinking/main.cpp
+play.h
+/home/anthony/Documents/Hedi/DNA_PredatorPrey/src/cudaLinking/play.h
+stdlib.h
+-
+stdio.h
+-
+
+/home/anthony/Documents/Hedi/DNA_PredatorPrey/src/cudaLinking/play.h
+

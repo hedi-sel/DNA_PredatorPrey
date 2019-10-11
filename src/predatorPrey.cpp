@@ -9,7 +9,6 @@
 
 #include "writeSnapshots.hpp"
 
-#include <omp.h>
 #include <boost/numeric/odeint.hpp>
 #include <boost/numeric/odeint/external/openmp/openmp.hpp>
 #include <boost/timer/timer.hpp>
@@ -57,8 +56,6 @@ int main(int argc, char **argv)
     cout << "Setup done, starting computation" << endl;
 
     cpu_timer timer_gpu;
-    int chunk_size = size2/omp_get_max_threads();
-    omp_set_schedule( omp_sched_static , chunk_size );
     integrate_adaptive(make_controlled(1E-6, 1E-6, runge_kutta_dopri5<matrix>()), prey_predator_system_gpu(1.2),
                        x, 0.0, 200.0, dt);
     double run_time_gpu = static_cast<double>(timer_gpu.elapsed().wall) * 1.0e-9;
@@ -71,7 +68,7 @@ int main(int argc, char **argv)
 
     cout << "Ended computation in: " << endl;
     std::cout << " -Single thread: " << run_time << "s" << std::endl;
-    std::cout << " -Multi thread(" << omp_get_max_threads() << "): " << run_time_gpu << "s" << std::endl;
+    std::cout << " -Multi thread(" << "): " << run_time_gpu << "s" << std::endl;
 
     return 0;
 }

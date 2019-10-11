@@ -21,8 +21,10 @@ include(CTest)
 # set_target_properties( particles
 #                        PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
 
-add_executable(particle_test main.cu particle.cu v3.cu)
+set(CMAKE_VERBOSE_MAKEFILE ON)
 
-set_property(TARGET particle_test
-             PROPERTY CUDA_SEPARABLE_COMPILATION ON)
+add_executable(play main.cpp play.cu particle.cu v3.cu)
+set_property(TARGET play PROPERTY CUDA_SEPARABLE_COMPILATION ON)
+
+#add_executable(particle_test main.cpp play)
 # target_link_libraries(particle_test PRIVATE particles)

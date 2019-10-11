@@ -1,0 +1,1 @@
+/usr/lib/nvidia-cuda-toolkit/bin/g++   CMakeFiles/play.o.dir/play.cu.o CMakeFiles/play.o.dir/particle.cu.o CMakeFiles/play.o.dir/v3.cu.o CMakeFiles/play.o.dir/cmake_device_link.o -o play.o  -L"/usr/lib/x86_64-linux-gnu/stubs" -lcudadevrt -lcudart_static -lrt -lpthread -ldl

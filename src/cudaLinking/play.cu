@@ -25,6 +25,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #include "particle.h"
+#include "play.h"
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -37,12 +38,9 @@ __global__ void advanceParticles(float dt, particle * pArray, int nParticles)
 	}
 }
 
-int main(int argc, char ** argv)
+int play(int n)
 {
 	printf("starting");
-	int n = 1000000;
-	if(argc > 1)	{ n = atoi(argv[1]);}     // Number of particles
-	if(argc > 2)	{	srand(atoi(argv[2])); } // Random seed
 
 	particle * pArray = new particle[n];
 	particle * devPArray = NULL;
