@@ -57,7 +57,7 @@ int main(int argc, char **argv)
 
     cpu_timer timer_gpu;
     integrate_adaptive(make_controlled(1E-6, 1E-6, runge_kutta_dopri5<matrix>()), prey_predator_system_gpu(1.2),
-                       x, 0.0, 200.0, dt);
+                       x, 0.0, 200.0, dt, boost::ref(obs));
     double run_time_gpu = static_cast<double>(timer_gpu.elapsed().wall) * 1.0e-9;
 
 

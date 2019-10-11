@@ -1,7 +1,4 @@
 #include <iostream>
-#include <boost/numeric/odeint.hpp>
-using namespace boost::numeric::odeint;
-typedef boost::numeric::ublas::matrix<double> matrix;
 
 const double k1 = 0.003;
 const double k2 = 0.004;
@@ -25,6 +22,6 @@ const double dh = 10;		//TODO
 const double dt = 0.01; //TODO
 const double C = 1.3;
 
-double laplacien(const matrix &x, int type, int position);
+double laplacien(int type, int position);
 double preyFunction(double n, double p, double d2n);
 double predatorFunction(double n, double p, double d2p);
