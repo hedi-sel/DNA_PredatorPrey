@@ -1,4 +1,5 @@
 #include <iostream>
+#include <boost/numeric/odeint.hpp>
 
 const double k1 = 0.003;
 const double k2 = 0.004;

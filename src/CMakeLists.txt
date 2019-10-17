@@ -13,6 +13,7 @@ set(CMAKE_CUDA_COMPILER "nvcc")
 
 # The following folder will be included
 include_directories("${PROJECT_SOURCE_DIR}")
+include_directories("${PROJECT_SOURCE_DIR}/src")
 include_directories(${BOOST_ROOT})
 link_directories(${LD_LIBRARY_PATH})
 
