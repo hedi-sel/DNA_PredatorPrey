@@ -1,8 +1,8 @@
 #include "basic_computation_functions.hpp"
 
-double laplacien(int type, int position)
+double laplacien(const double* position)
 {
-    return -2.0  + 1 / (dh * dh);
+    return (-2 * position[0] + position[1] + position[-1] )/ (dh * dh);
 }
 
 double preyFunction(double n, double p, double d2n)

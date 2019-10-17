@@ -1,15 +1,15 @@
-#include "predator_prey_system_gpu.hpp"
-#include "../basic_computation_functions.hpp"
+#include "predator_prey_systems.hpp"
+#include <basic_computation_functions.hpp>
+#include "cudaComputer.hpp"
+#include "boost/multi_array.hpp"
 
-void prey_predator_system_gpu::operator()(const matrix &x, matrix &dxdt, double /* t */) const
+void prey_predator_system_gpu::operator()(const matrix &x, matrix &dxdt, double t) const
 {
-    size_t size1 = x.size1(), size2 = x.size2();
-    for (size_t j = 1; j < size2 - 1; ++j)
-    {
-        dxdt(0, j) = preyFunction(x(0, j), x(1, j), laplacien(0, j));
-        dxdt(1, j) = predatorFunction(x(0, j), x(1, j), laplacien(1, j));
-    }
-
-    for (size_t i = 0; i < x.size1(); ++i)
-        dxdt(i, 0) = dxdt(i, x.size2() - 1) = 0.0;
+    compute(x.data().begin(), &x.data().begin()[x.size2()], dxdt.data().begin(), x.size2());
+    //dxdt.data() = boost::numeric::ublas::unbounded_array<double>(x.size1() * x.size2(), b[0]);
+    std::cout << t << " " << x(0, 10) << " " << x(1, 10) << " ";
+    std::cout << x.data().begin()[10] << " " << x.data().begin()[10 + x.size2()] << " " << dxdt.data().size() << std::endl; /* 
+    for (size_t i = 0; i < x.size1(); i++)
+        for (size_t j = 0; j < x.size2(); j++)
+            dxdt(i, j) = b[j + i * x.size2()]; */
 }

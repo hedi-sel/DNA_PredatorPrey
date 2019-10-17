@@ -1,5 +1,4 @@
 #include <iostream>
-#include <boost/numeric/odeint.hpp>
 
 const double k1 = 0.003;
 const double k2 = 0.004;
@@ -19,10 +18,10 @@ const double delta = (exo / pol) * (kp / k2 / Kmp);
 const double A = g - l * delta;
 const double K = (g - l * delta) / (B * g * g);
 const double d = 1.0;		//TODO
-const double dh = 10;		//TODO
-const double dt = 0.01; //TODO
+const double dh = 1;		//TODO
+const double dt = 0.1; //TODO
 const double C = 1.3;
 
-double laplacien(int type, int position);
+double laplacien(const double* position);
 double preyFunction(double n, double p, double d2n);
 double predatorFunction(double n, double p, double d2p);
