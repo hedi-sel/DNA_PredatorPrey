@@ -19,7 +19,7 @@ int main(int argc, char **argv)
 {
     std::cout << boost::filesystem::current_path() << std::endl;
     string outputPath = "./output";
-    size_t size1 = 2, size2 = 200;
+    size_t size1 = 2, size2 = 8192;
     matrix x(size1, size2, 0.0);
     matrix y(size1, size2, 0.0);
 
@@ -63,7 +63,7 @@ int main(int argc, char **argv)
 
     cpu_timer timer;
     integrate_const(runge_kutta4<matrix>(), prey_predator_system(1.2),
-                    x, 0.0, 10.0, dt);
+                    x, 0.0, 10.0, dt, boost::ref(obs));
     double run_time = static_cast<double>(timer.elapsed().wall) * 1.0e-9;
 
     cout << "Ended computation in: " << endl;

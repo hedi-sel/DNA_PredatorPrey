@@ -1,7 +1,7 @@
 #include "cudaComputer.hpp"
 #include <basic_computation_functions.hpp>
 #include <array>
-void compute(const double* pred, const double* prey, double* diff, int size){
+void compute(const double* prey, const double* pred, double* diff, int size){
     //double* diff = new double [2*size]; 
     for (size_t j = 1; j < size - 1; ++j)
     {
