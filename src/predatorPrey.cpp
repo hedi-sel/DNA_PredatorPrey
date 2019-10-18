@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <boost/filesystem.hpp>
 
-#include "basic_computation_functions.hpp"
+#include "constants.hpp"
 #include "PdeSystem/predator_prey_systems.hpp"
 
 #include "writeSnapshots.hpp"
