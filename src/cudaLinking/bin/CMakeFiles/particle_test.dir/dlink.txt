@@ -1,1 +1,0 @@
-/usr/bin/nvcc    -Xcompiler=-fPIC -Wno-deprecated-gpu-targets -shared -dlink CMakeFiles/particle_test.dir/main.cpp.o CMakeFiles/particle_test.dir/play.cu.o CMakeFiles/particle_test.dir/particle.cu.o CMakeFiles/particle_test.dir/v3.cu.o -o CMakeFiles/particle_test.dir/cmake_device_link.o  -L/usr/lib/x86_64-linux-gnu/stubs  -L/usr/lib/gcc/x86_64-linux-gnu/6 

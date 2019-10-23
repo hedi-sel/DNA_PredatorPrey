@@ -1,5 +1,4 @@
 #include "predator_prey_systems.hpp"
-#include <basic_computation_functions.hpp>
 #include "cudaComputer.hpp"
 #include "boost/multi_array.hpp"
 

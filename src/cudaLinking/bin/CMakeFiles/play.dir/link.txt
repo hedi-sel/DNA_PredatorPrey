@@ -1,1 +1,0 @@
-/usr/bin/c++     CMakeFiles/play.dir/main.cpp.o CMakeFiles/play.dir/play.cu.o CMakeFiles/play.dir/particle.cu.o CMakeFiles/play.dir/v3.cu.o CMakeFiles/play.dir/cmake_device_link.o  -o play  -L/usr/lib/x86_64-linux-gnu/stubs  -L/usr/lib/gcc/x86_64-linux-gnu/6 -lcudadevrt -lcudart_static -lrt -lpthread -ldl 
