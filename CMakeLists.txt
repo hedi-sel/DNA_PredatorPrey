@@ -1,16 +1,19 @@
 cmake_minimum_required(VERSION 3.0)
-project(PredatorPrey LANGUAGES CXX CUDA)
 
 file(MAKE_DIRECTORY output)
 file(MAKE_DIRECTORY bin)
-execute_process(COMMAND cd ./bin)
+file(MAKE_DIRECTORY cmake)
+project(PredatorPrey LANGUAGES CXX CUDA)
 
 set(PROJECT_DIR ${CMAKE_SOURCE_DIR})
-set(CMAKE_SOURCE_DIR ${PROJECT_DIR}/src)
-set(SRC ${CMAKE_SOURCE_DIR})
+set(PROJECT_SOURCE_DIR ${PROJECT_DIR}/src)
+set(SRC ${PROJECT_SOURCE_DIR})
+set(PROJECT_BINARY_DIR ${PROJECT_DIR}/bin)
 set(CMAKE_BINARY_DIR ${PROJECT_DIR}/cmake)
-set(BUILD_RPATH ${PROJECT_DIR})
+set(CMAKE_BUILD_RPATH ${PROJECT_DIR}/bin)
+set(CMAKE_FILES_DIRECTORY ${PROJECT_DIR}/cmake)
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_DIR}/run)
+execute_process(COMMAND cd ${CMAKE_BINARY_DIR})
 
 set(BOOST_ROOT $ENV{BOOST_ROOT})
 set(LD_LIBRARY_PATH ${BOOST_ROOT}/stage/lib)
@@ -33,8 +36,5 @@ target_link_libraries(predatorPrey boost_filesystem)
 target_link_libraries(predatorPrey boost_system)
 set_property(TARGET predatorPrey PROPERTY CUDA_SEPARABLE_COMPILATION ON)
 
-
 set(CMAKE_VERBOSE_MAKEFILE OFF)
 # set(CMAKE_CXX_FLAGS "-v")
-
-# run shell::cmake -S src/ -B CMak
