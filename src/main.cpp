@@ -60,7 +60,6 @@ int main(int argc, char **argv)
 
     cout << "Setup done, starting computation" << endl;
     cpu_timer timer_gpu;
-
     integrate_const(runge_kutta4<matrix>(), prey_predator_system_gpu(2.4), x, 0.0, 10.0, dt, boost::ref(obs));
     double run_time_gpu = static_cast<double>(timer_gpu.elapsed().wall) * 1.0e-9;
 
