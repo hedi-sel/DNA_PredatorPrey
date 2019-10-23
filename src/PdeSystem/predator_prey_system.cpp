@@ -1,8 +1,9 @@
+#include <iostream>
 #include "predator_prey_systems.hpp"
 #include <assert.h>
 
 #include "functions.cpp"
-void prey_predator_system::operator()(const matrix &x, matrix &dxdt, double /* t */) const
+void prey_predator_system::operator()(const matrix &x, matrix &dxdt, double t) const
 {
     size_t size1 = x.size1(), size2 = x.size2();
     for (size_t j = 1; j < size2 - 1; ++j)

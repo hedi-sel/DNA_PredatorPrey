@@ -7,7 +7,7 @@ class prey_predator_system
 {
 public:
     prey_predator_system(double gamma = 0.5)
-            : m_gamma(gamma) {}
+        : m_gamma(gamma) {}
 
     void operator()(const matrix &x, matrix &dxdt, double) const;
 
@@ -21,7 +21,7 @@ public:
     prey_predator_system_gpu(double gamma = 0.5)
         : m_gamma(gamma) {}
 
-    void operator()(const matrix &x, matrix &dxdt, double) const;
+    void operator()(const matrix &x, matrix &dxdt, double t) const;
 
 private:
     double m_gamma;
