@@ -14,4 +14,5 @@ void prey_predator_system::operator()(const matrix &x, matrix &dxdt, double t) c
 
     for (size_t i = 0; i < x.size1(); ++i)
         dxdt(i, 0) = dxdt(i, x.size2() - 1) = 0.0;
+
 }

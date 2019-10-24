@@ -61,10 +61,10 @@ int main(int argc, char **argv)
     for (const auto &entry : it)
         remove(entry.path());
 
-    cout << "Setup done, starting computation" << endl; /*
+    cout << "Setup done, starting computation" << endl; 
     cpu_timer timer_gpu;
     integrate_const(runge_kutta4<matrix>(), prey_predator_system_gpu(2.4), x, 0.0, tmax, dt, boost::ref(obs));
-    double run_time_gpu = static_cast<double>(timer_gpu.elapsed().wall) * 1.0e-9; */
+    double run_time_gpu = static_cast<double>(timer_gpu.elapsed().wall) * 1.0e-9;
 
     cpu_timer timer_custom_gpu;
     double t = 0;
@@ -75,16 +75,16 @@ int main(int argc, char **argv)
         t += dt/5.0;
     }
     double run_time_custom_gpu = static_cast<double>(timer_custom_gpu.elapsed().wall) * 1.0e-9;
-
+ 
     cpu_timer timer;
     integrate_const(runge_kutta4<matrix>(), prey_predator_system(1.2),
-                    y, 0.0, tmax, dt, boost::ref(obs));
+                    y, 0.0, tmax, dt);
     double run_time = static_cast<double>(timer.elapsed().wall) * 1.0e-9;
 
     cout << "Ended computation in: " << endl;
     std::cout << " -Single thread: " << run_time << "s" << std::endl;
-    //std::cout << " -Multi thread: " << run_time_gpu << "s" << std::endl;
-    std::cout << " -Custom multi thread: " << run_time_custom_gpu << "s" << std::endl;
+    std::cout << " -Multi thread: " << run_time_gpu << "s" << std::endl;
+    //std::cout << " -Custom multi thread: " << run_time_custom_gpu << "s" << std::endl;
 
     return 0;
 }

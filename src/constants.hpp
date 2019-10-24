@@ -20,4 +20,4 @@ const double dh = 1;   //TODO
 const double dt = 0.1; //TODO
 const double C = 1.3;
 
-const size_t size1 = 2, size2 = 300;
+const size_t size1 = 2, size2 = 30;
