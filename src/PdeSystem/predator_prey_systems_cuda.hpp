@@ -6,6 +6,7 @@ public:
     int im;
     int jm;
     double *x;
+    double *dxdt;
     double snapPeriod;
     prey_predator_iterator(double *, int, int, double);
     ~prey_predator_iterator();

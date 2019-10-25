@@ -1,5 +1,5 @@
 #include <constants.hpp>
-#include <function.h>
+#include <functions.h>
 
 __device__ double devLaplacien(const double* position)
 {
