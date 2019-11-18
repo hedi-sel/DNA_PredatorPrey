@@ -1,14 +1,14 @@
 #include <iostream>
 
-class prey_predator_iterator
+class iterator_system
 {
 public:
     int nSpecies;
     int sampleSize;
     double t;
     bool doPrint;
-    prey_predator_iterator(double *, int, int, double, bool);
-    ~prey_predator_iterator();
+    iterator_system(double *, int, int, double, bool);
+    ~iterator_system();
     void iterate(double);
     void printer(double);
 
