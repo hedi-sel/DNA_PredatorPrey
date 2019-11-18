@@ -11,3 +11,4 @@ src/bin/*
 **/Makefile
 **/CMakeCache.txt
 **/cmake_install.cmake
+**.gif
