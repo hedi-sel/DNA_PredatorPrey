@@ -1,6 +1,13 @@
 #include <iostream>
-#include "predator_prey_systems_cuda.hpp"
+#include <fstream>
+#include <sstream>
+#include <boost/filesystem.hpp>
+#include <string>
+#include <stdio.h>
+
 #include <assert.h>
+
+#include "predator_prey_systems_cuda.hpp"
 #include <constants.hpp>
 #include <functions.h>
 
@@ -28,51 +35,61 @@ __global__ void differentiate(double* x, double* dxdt, int im, int jm, double t,
                 : devPredatorFunction(x[j], x[j+jm], devLaplacien( &x[j+jm]));
     else
         dxdt[j + jm * i] = 0;
+    // dxdt[j + jm * i] = 1;
 }
 __global__ void addStep(double* x, double* dxdt,int im, int jm, double t, double dt)
 {
     int i = blockIdx.x;
     int j = threadIdx.x + threadIdx.y * blockDim.x + blockIdx.y * blockDim.x * blockDim.y;
-    x[j + jm * i] = dxdt[j + jm * i] * dt;
+    // printf("%d", dxdt[j + jm * i]);
+    x[j + jm * i] += dxdt[j + jm * i] * dt;
 }
 
-prey_predator_iterator::prey_predator_iterator(double *x, int im, int jm, double snapPeriod = 0.0){
+prey_predator_iterator::prey_predator_iterator(double *x, int im, int jm, bool print){
     this->im = im;
     this->jm = jm;
+    this->doPrint = print;
     gpuErrchk(  cudaMalloc(&this->x, im * jm * sizeof(double)) );
     gpuErrchk(  cudaMalloc(&this->dxdt, im * jm * sizeof(double)) );
     gpuErrchk(  cudaMemcpy(this->x, x, im * jm * sizeof(double), cudaMemcpyHostToDevice) );
-    this->snapPeriod = snapPeriod;
+    //this->snapPeriod = snapPeriod;
     dim3 threadsPerBlock(10, 30);
     dim3 numBlocks(2);//, im * jm / (threadsPerBlock.x * threadsPerBlock.y));
    // cudaMemcpy(xDevice, x, im*jm*sizeof(double), cudaMemcpyHostToDevice);
+   if(doPrint) 
+       printer(0.0);
+
 }
 prey_predator_iterator::~prey_predator_iterator(){
+    gpuErrchk(cudaFree(x));
+    gpuErrchk(cudaFree(dxdt));
 };
 
 void prey_predator_iterator::iterate(double t, double dt){
     // dim3 threadsPerBlock(32, 32);
-    dim3 threadsPerBlock(10, 30);
-    dim3 numBlocks(2);//, im * jm / (threadsPerBlock.x * threadsPerBlock.y));
-      printer(t,dt,0.0);
+    stepCount += 1;
+    dim3 threadsPerBlock(32,32);
+    dim3 numBlocks(im * jm / (threadsPerBlock.x * threadsPerBlock.y));//, im * jm / (threadsPerBlock.x * threadsPerBlock.y));
     differentiate<<<numBlocks,threadsPerBlock>>>(x, dxdt, im, jm, t, dt);
     addStep<<<numBlocks,threadsPerBlock>>>(x, dxdt, im, jm, t, dt);
-    printer(t,dt,1.0);
-    printer(t,dt, 9.0); 
+    if(doPrint && stepCount%500 == 0)
+        printer(t);
     //TODO check why x doesn't change
 }
 
-void prey_predator_iterator::printer(double t, double dt, double tp){
-    if(t >= tp && t<tp+dt){
-        std::cout << std::endl;
-        dim3 threadsPerBlock(10, 30);
-        dim3 numBlocks(2);//, im * jm / (threadsPerBlock.x * threadsPerBlock.y));
-        double *xHost = new double[im * jm];
-        cudaMemcpy(xHost, x, im*jm*sizeof(double), cudaMemcpyDeviceToHost);
-        for (int i = 0; i<im*jm; i++){
-            std::cout << xHost[i] << " ";
-        }
-        std::cout << std::endl;
-    }
+void prey_predator_iterator::printer(double t){
+    dim3 threadsPerBlock(32,32);
+    dim3 numBlocks(im * jm / (threadsPerBlock.x * threadsPerBlock.y));//, im * jm / (threadsPerBlock.x * threadsPerBlock.y));
+    double *xHost = new double[im * jm];
+    cudaMemcpy(xHost, x, im*jm*sizeof(double), cudaMemcpyDeviceToHost);
 
+    std::ostringstream stream;
+    stream << GpuOutputPath << "/state_at_t=" << t << "s.dat";
+    std::ofstream fout(stream.str());
+    fout << im << "\t" << jm << "\n";
+    for (size_t i = 0; i < im*jm; ++i)
+    {
+        fout << i/jm << "\t" << i%jm << "\t" << xHost[i] << "\n";
+    }
 }
+

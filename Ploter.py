@@ -4,14 +4,23 @@ import os
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
-dataLocation="output/"
-printLocation="ploter/"
+dataLocation = input("Data Location: (default: output/)"):
+if (dataLocation == "")
+    dataLocation = "output/"
+
+printLocation = input("Plot Location: (default: plot)"):
+if (printLocation == "")
+    printLocation = "plot/"
 
 def readLine(line):
     values = []
     for str in line.split("\t"):
         if (str.count(".") > 0):
             values.append(float(str))
+        elif (str.count("nan") > 0):
+            values.append(0)
+        elif (str.count("inf") > 0):
+            values.append(10)
         else:
             values.append(int(str))
     return values
@@ -59,8 +68,7 @@ for file in os.listdir("./ploter"):
         os.remove("./ploter/"+file)
 
 for file in os.listdir("./output"):
-    if file != os.path.basename('empty'):
-        plotAndPrintData(file)
+    plotAndPrintData(file)
 
 # ax = fig.add_subplot(111, projection='3d')
 # x, y = np.array(2), np.array(128)
