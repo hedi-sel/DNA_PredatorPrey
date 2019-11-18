@@ -1,8 +1,5 @@
 cmake_minimum_required(VERSION 3.15)
 
-file(MAKE_DIRECTORY output)
-file(MAKE_DIRECTORY bin)
-file(MAKE_DIRECTORY cmake)
 project(PredatorPrey LANGUAGES CXX CUDA)
 
 set(PROJECT_DIR ${CMAKE_SOURCE_DIR})

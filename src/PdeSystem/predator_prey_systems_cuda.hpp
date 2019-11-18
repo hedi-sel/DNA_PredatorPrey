@@ -3,11 +3,11 @@
 class prey_predator_iterator
 {
 public:
-    int im;
-    int jm;
-    double t=0.0;
+    int nSpecies;
+    int sampleSize;
+    double t;
     bool doPrint;
-    prey_predator_iterator(double *, int, int, bool);
+    prey_predator_iterator(double *, int, int, double, bool);
     ~prey_predator_iterator();
     void iterate(double);
     void printer(double);

@@ -2,8 +2,7 @@
 .vs/*
 .pytest_cache/*
 
-ploter/*
-|ploter/Ploter.py
+plot/*
 run/*
 output/*
 tests/*

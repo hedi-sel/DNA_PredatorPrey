@@ -17,11 +17,10 @@ const double l = kn / kp;
 const double delta = (exo / pol) * (kp / k2 / Kmp);
 const double A = g - l * delta;
 const double K = (g - l * delta) / (B * g * g);
-const double d = 1.0;  //TODO
-const double dh = 1.0;   //TODO
-const double dt = 0.1; //TODO
+const double d = 1.0;
 const double C = 1.3;
 
-const size_t size1 = 2, size2 = 350;
+const double dh = 1.0;
+
 const std::string CpuOutputPath = "./outputTemoin";
 const std::string GpuOutputPath = "./output";

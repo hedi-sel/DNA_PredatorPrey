@@ -26,65 +26,47 @@ __device__ int position()
 {
     return threadIdx.x + threadIdx.y * blockDim.x + blockIdx.x * blockDim.x * blockDim.y;
 }
-__device__ double differentiate(double* x, double* dxdt, int im, int jm, double t, int pos)
-{
-    if(pos < im*jm){
-        if((pos+1)%jm > 1){
-            dxdt[pos] = (pos < jm)? devPreyFunction(x[pos], x[pos + jm], devLaplacien(&x[pos]))
-                    : devPredatorFunction(x[pos%jm], x[pos], devLaplacien( &x[pos]));
-            return dxdt[pos];
-        }
-        else{
-            dxdt[pos] = 0;
-            return 0;
-        }
-    }
-    else
-        return 0;
-    // dxdt[j + jm * i] = 1;
-}
 
-__device__ double diff(double* x, int im, int jm, double t, int pos)
+__device__ double differentiate(double* x, int nSpecies, int sampleSize, double t, int pos)
 {
-    if(pos < im*jm){
-        if((pos+1)%jm > 1)
-            return (pos < jm)? devPreyFunction(x[pos], x[pos + jm], devLaplacien(&x[pos]))
-                    : devPredatorFunction(x[pos%jm], x[pos], devLaplacien( &x[pos]));
+    if(pos < nSpecies*sampleSize){
+        if((pos+1)%sampleSize > 1)
+            return (pos < sampleSize)? devPreyFunction(x[pos], x[pos + sampleSize], devLaplacien(&x[pos]))
+                    : devPredatorFunction(x[pos%sampleSize], x[pos], devLaplacien( &x[pos]));
         else
             return 0; 
     }
     else
         return 0;
-    // dxdt[j + jm * i] = 1;
 }
 
-__global__ void rungeKutta4Stepper(double* x, double* dxdt,int im, int jm, double t, double dt)
+__global__ void rungeKutta4Stepper(double* x, double* dxdt,int nSpecies, int sampleSize, double t, double dt)
 {
     int pos = position();    
-    if(pos > im*jm)
+    if(pos > nSpecies*sampleSize)
         return;
-    differentiate(x, dxdt, im, jm, t, pos);
-    double k1 = dt * diff(x , im, jm, t, pos);
+    double k1 = dt * differentiate(x , nSpecies, sampleSize, t, pos);
     x[pos]+=k1/2.0;
     __syncthreads();
-    double k2 = dt * diff(x, im, jm, t + dt/2.0, pos);
+    double k2 = dt * differentiate(x, nSpecies, sampleSize, t + dt/2.0, pos);
     x[pos]+=(k2 - k1)/2.0;    
     __syncthreads();
-    double k3 = dt * diff(x, im, jm, t + dt/2.0, pos);    
+    double k3 = dt * differentiate(x, nSpecies, sampleSize, t + dt/2.0, pos);    
     x[pos]+=k3 - k1/2.0;    
     __syncthreads(); 
-    double k4 = dt * diff(x, im, jm, t + dt, pos);    
+    double k4 = dt * differentiate(x, nSpecies, sampleSize, t + dt, pos);    
     x[pos] += (k1 + 2*k2 + 2*k3 + k4)/6.0;
 
 }
 
-prey_predator_iterator::prey_predator_iterator(double *x, int im, int jm, bool print){
-    this->im = im;
-    this->jm = jm;
+prey_predator_iterator::prey_predator_iterator(double *x, int nSpecies, int sampleSize, double t0, bool print){
+    this->nSpecies = nSpecies;
+    this->sampleSize = sampleSize;
     this->doPrint = print;
-    gpuErrchk(  cudaMalloc(&this->x, im * jm * sizeof(double)) );
-    gpuErrchk(  cudaMalloc(&this->dxdt, im * jm * sizeof(double)) );
-    gpuErrchk(  cudaMemcpy(this->x, x, im * jm * sizeof(double), cudaMemcpyHostToDevice) );
+    this->t = t0;
+    gpuErrchk(  cudaMalloc(&this->x, nSpecies * sampleSize * sizeof(double)) );
+    gpuErrchk(  cudaMalloc(&this->dxdt, nSpecies * sampleSize * sizeof(double)) );
+    gpuErrchk(  cudaMemcpy(this->x, x, nSpecies * sampleSize * sizeof(double), cudaMemcpyHostToDevice) );
    
     if(doPrint) {
         printer(0.0);
@@ -100,9 +82,9 @@ prey_predator_iterator::~prey_predator_iterator(){
 void prey_predator_iterator::iterate(double dt){
     t+=dt;
     dim3 threadsPerBlock(32,32);
-    int numBlocks = (im * jm + threadsPerBlock.x * threadsPerBlock.y - 1) / (threadsPerBlock.x * threadsPerBlock.y);
-    assert(numBlocks*32*32 > im*jm);
-    rungeKutta4Stepper<<<numBlocks,threadsPerBlock>>>(x, dxdt, im, jm, t, dt);
+    int numBlocks = (nSpecies * sampleSize + threadsPerBlock.x * threadsPerBlock.y - 1) / (threadsPerBlock.x * threadsPerBlock.y);
+    assert(numBlocks*32*32 > nSpecies*sampleSize);
+    rungeKutta4Stepper<<<numBlocks,threadsPerBlock>>>(x, dxdt, nSpecies, sampleSize, t, dt);
     if(doPrint && t>=nextPrint){
         printer(t);
         nextPrint += printPeriod;
@@ -111,16 +93,16 @@ void prey_predator_iterator::iterate(double dt){
 }
 
 void prey_predator_iterator::printer(double t){
-    double *xHost = new double[im * jm];
-    cudaMemcpy(xHost, x, im*jm*sizeof(double), cudaMemcpyDeviceToHost);
+    double *xHost = new double[nSpecies * sampleSize];
+    cudaMemcpy(xHost, x, nSpecies*sampleSize*sizeof(double), cudaMemcpyDeviceToHost);
 
     std::ostringstream stream;
     stream << GpuOutputPath << "/state_at_t=" << t << "s.dat";
     std::ofstream fout(stream.str());
-    fout << im << "\t" << jm << "\n";
-    for (size_t i = 0; i < im*jm; ++i)
+    fout << nSpecies << "\t" << sampleSize << "\n";
+    for (size_t i = 0; i < nSpecies*sampleSize; ++i)
     {
-        fout << i/jm << "\t" << i%jm << "\t" << xHost[i] << "\n";
+        fout << i/sampleSize << "\t" << i%sampleSize << "\t" << xHost[i] << "\n";
     }
 }
 
