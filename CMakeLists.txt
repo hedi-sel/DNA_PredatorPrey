@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.15)
 
 file(MAKE_DIRECTORY output)
 file(MAKE_DIRECTORY bin)

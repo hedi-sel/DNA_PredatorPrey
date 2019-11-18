@@ -76,12 +76,10 @@ int main(int argc, char **argv)
     double run_time_gpu = static_cast<double>(timer_gpu.elapsed().wall) * 1.0e-9; */
 
     cpu_timer timer_custom_gpu;
-    double t = 0;
     prey_predator_iterator iterator(x.data().begin(), size1, size2, true);
-    while (t < tmax)
+    while (iterator.t < tmax)
     {
-        iterator.iterate(t, dt/5.0);
-        t += dt/5.0;
+        iterator.iterate(dt);
     }
     double run_time_custom_gpu = static_cast<double>(timer_custom_gpu.elapsed().wall) * 1.0e-9;
  

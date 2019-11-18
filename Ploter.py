@@ -4,13 +4,13 @@ import os
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
-dataLocation = input("Data Location: (default: output/)"):
-if (dataLocation == "")
-    dataLocation = "output/"
+dataLocation = input("Data Location: (default: ./output)")
+if (dataLocation == ""):
+    dataLocation = "./output"
 
-printLocation = input("Plot Location: (default: plot)"):
-if (printLocation == "")
-    printLocation = "plot/"
+printLocation = input("Plot Location: (default: ./plot)")
+if (printLocation == ""):
+    printLocation = "./plot"
 
 def readLine(line):
     values = []
@@ -27,7 +27,7 @@ def readLine(line):
 
 
 def plotAndPrintData(fileName):
-    f = open(dataLocation+fileName, "r")
+    f = open(dataLocation+"/"+fileName, "r")
     lines = f.readlines()
 
     """
@@ -59,15 +59,15 @@ def plotAndPrintData(fileName):
     else:
         return
 
-    plt.savefig(printLocation+fileName.replace(".dat", ".png"))
+    plt.savefig(printLocation+"/"+fileName.replace(".dat", ".png"))
     plt.close()
 
 
-for file in os.listdir("./ploter"):
-    if file != os.path.basename(__file__):
-        os.remove("./ploter/"+file)
+for file in os.listdir(printLocation):
+    if ".png" in file:
+        os.remove(printLocation+"/"+file)
 
-for file in os.listdir("./output"):
+for file in os.listdir(dataLocation):
     plotAndPrintData(file)
 
 # ax = fig.add_subplot(111, projection='3d')
