@@ -5,7 +5,7 @@
 
 #include "constants.hpp"
 #include "PdeSystem/predator_prey_systems.hpp"
-#include "PdeSystem/predator_prey_systems_cuda.hpp"
+#include "PDESystemCUDA/iterator_system.hpp"
 #include "PdeSystem/cudaComputer.hpp"
 
 #include "writeSnapshots.hpp"
@@ -85,7 +85,7 @@ int main(int argc, char **argv)
     double run_time = static_cast<double>(timer.elapsed().wall) * 1.0e-9;
 
     cpu_timer timer_custom_gpu;
-    prey_predator_iterator iterator(x.data().begin(), nSpecies, sampleSize, t0, true);
+    iterator_system iterator(x.data().begin(), nSpecies, sampleSize, t0, true);
     while (iterator.t < tmax)
     {
         iterator.iterate(dt);

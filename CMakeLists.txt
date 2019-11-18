@@ -26,7 +26,7 @@ include_directories(${BOOST_ROOT})
 link_directories(${LD_LIBRARY_PATH})
 
 file(GLOB sources ${SRC}/main.cpp ${SRC}/PdeSystem/predator_prey_system.cpp ${SRC}/PdeSystem/predator_prey_system_gpu.cpp  
-        ${SRC}/PdeSystem/cudaComputer.cu ${SRC}/PdeSystem/predator_prey_iterator.cu ${SRC}/functions.cu)
+        ${SRC}/PdeSystem/cudaComputer.cu ${SRC}/PDESystemCUDA/iterator_system.cu ${SRC}/functions.cu)
 add_executable(predatorPrey ${sources})
 target_link_libraries(predatorPrey boost_timer)
 target_link_libraries(predatorPrey boost_chrono)
