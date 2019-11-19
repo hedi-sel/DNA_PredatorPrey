@@ -20,15 +20,6 @@ using namespace std;
 int main(int argc, char **argv)
 {
 
-    // Initial values
-    //
-    const double t0 = 0.0;
-    const double tmax = 100.0;
-    const double dt = 0.1;
-
-    const double xLength = 500;
-    //Change dh in constants
-
     const size_t nSpecies = 2, sampleSize = (size_t) (xLength/dh);
 
     //Matrix initialization
@@ -56,7 +47,7 @@ int main(int argc, char **argv)
     // Initialize Observer, for result printing
 
     write_snapshots snapshots;
-    auto snap = [&snapshots, &CpuOutputPath, &dt](int n) {
+    auto snap = [&snapshots, CpuOutputPath, dt](int n) {
         ostringstream stream;
         stream << CpuOutputPath << "/state_at_t=" << double(n) * dt << "s.dat";
         snapshots.snapshots().insert(make_pair(size_t(n), stream.str()));
@@ -85,7 +76,7 @@ int main(int argc, char **argv)
     double run_time = static_cast<double>(timer.elapsed().wall) * 1.0e-9;
 
     cpu_timer timer_custom_gpu;
-    iterator_system iterator(x.data().begin(), nSpecies, sampleSize, t0, true);
+    Iterator_system iterator(x.data().begin(), nSpecies, sampleSize, t0, true);
     while (iterator.t < tmax)
     {
         iterator.iterate(dt);

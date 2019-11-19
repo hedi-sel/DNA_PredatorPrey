@@ -21,7 +21,7 @@ __device__ double differentiate(double *x, int nSpecies, int sampleSize, double 
         return 0;
 }
 
-__global__ void rungeKutta4Stepper(double *x, double *dxdt, int nSpecies, int sampleSize, double t, double dt)
+__global__ void rungeKutta4StepperDev(double *x, double *dxdt, int nSpecies, int sampleSize, double t, double dt)
 {
     int pos = position();
     if (pos > nSpecies * sampleSize)
@@ -37,5 +37,12 @@ __global__ void rungeKutta4Stepper(double *x, double *dxdt, int nSpecies, int sa
     __syncthreads();
     double k4 = dt * differentiate(x, nSpecies, sampleSize, t + dt, pos);
     x[pos] += (k1 + 2 * k2 + 2 * k3 + k4) / 6.0;
+}
+
+void rungeKutta4Stepper(double *x, double *dxdt, int nSpecies, int sampleSize, double t, double dt){
+    dim3 threadsPerBlock(32, 32);
+    int numBlocks = (nSpecies * sampleSize + threadsPerBlock.x * threadsPerBlock.y - 1) / (threadsPerBlock.x * threadsPerBlock.y);
+    assert(numBlocks * 32 * 32 > nSpecies * sampleSize);
+    rungeKutta4StepperDev<<<numBlocks, threadsPerBlock>>>(x, dxdt, nSpecies, sampleSize, t, dt);
 }
 

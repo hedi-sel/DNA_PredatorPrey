@@ -15,12 +15,14 @@ if (printLocation == ""):
 def readLine(line):
     values = []
     for str in line.split("\t"):
-        if (str.count(".") > 0):
+        if "." in str or "e" in str:
             values.append(float(str))
-        elif (str.count("nan") > 0):
+        elif "nan" in str:
             values.append(0)
-        elif (str.count("inf") > 0):
+            print("Warning, there is a nan value")
+        elif "inf" in str:
             values.append(10)
+            print("Warning, there is an infinite value")
         else:
             values.append(int(str))
     return values

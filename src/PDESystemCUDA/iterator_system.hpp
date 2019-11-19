@@ -1,14 +1,16 @@
 #include <iostream>
 
-class iterator_system
+typedef void (*Stepper)(double *, double *, int , int , double , double);
+
+class Iterator_system
 {
 public:
     int nSpecies;
     int sampleSize;
     double t;
     bool doPrint;
-    iterator_system(double *, int, int, double, bool);
-    ~iterator_system();
+    Iterator_system(double *, int, int, double, bool);
+    ~Iterator_system();
     void iterate(double);
     void printer(double);
 
@@ -17,4 +19,5 @@ private:
     double nextPrint = 0.0;
     double *x;
     double *dxdt;
+    Stepper stepper;
 };

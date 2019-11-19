@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <assert.h>
 
+#include "runge_kutta_4_stepper.hpp"
 #include "iterator_system.hpp"
 #include <constants.hpp>
 #include <functions.h>
@@ -28,7 +29,7 @@ inline void gpuAssert(cudaError_t code, const char *file, int line, bool abort =
 }
 
 
-iterator_system::iterator_system(double *x, int nSpecies, int sampleSize, double t0, bool print)
+Iterator_system::Iterator_system(double *x, int nSpecies, int sampleSize, double t0, bool print)
 {
     this->nSpecies = nSpecies;
     this->sampleSize = sampleSize;
@@ -38,25 +39,28 @@ iterator_system::iterator_system(double *x, int nSpecies, int sampleSize, double
     gpuErrchk(cudaMalloc(&this->dxdt, nSpecies * sampleSize * sizeof(double)));
     gpuErrchk(cudaMemcpy(this->x, x, nSpecies * sampleSize * sizeof(double), cudaMemcpyHostToDevice));
 
+    this->stepper = rungeKutta4Stepper;
+
     if (doPrint)
     {
         printer(0.0);
         nextPrint += printPeriod;
     }
 }
-iterator_system::~iterator_system()
+Iterator_system::~Iterator_system()
 {
     gpuErrchk(cudaFree(x));
     gpuErrchk(cudaFree(dxdt));
 };
 
-void iterator_system::iterate(double dt)
+void Iterator_system::iterate(double dt)
 {
     t += dt;
     dim3 threadsPerBlock(32, 32);
     int numBlocks = (nSpecies * sampleSize + threadsPerBlock.x * threadsPerBlock.y - 1) / (threadsPerBlock.x * threadsPerBlock.y);
     assert(numBlocks * 32 * 32 > nSpecies * sampleSize);
-    rungeKutta4Stepper<<<numBlocks, threadsPerBlock>>>(x, dxdt, nSpecies, sampleSize, t, dt);
+    stepper(x, dxdt, nSpecies, sampleSize, t, dt);
+    //rungeKutta4Stepper<<<numBlocks, threadsPerBlock>>>(x, dxdt, nSpecies, sampleSize, t, dt);
     if (doPrint && t >= nextPrint)
     {
         printer(t);
@@ -65,7 +69,7 @@ void iterator_system::iterate(double dt)
     //TODO check why x doesn't change
 }
 
-void iterator_system::printer(double t)
+void Iterator_system::printer(double t)
 {
     double *xHost = new double[nSpecies * sampleSize];
     cudaMemcpy(xHost, x, nSpecies * sampleSize * sizeof(double), cudaMemcpyDeviceToHost);
