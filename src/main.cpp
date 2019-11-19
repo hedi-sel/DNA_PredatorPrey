@@ -27,21 +27,26 @@ int main(int argc, char **argv)
     matrix x(nSpecies, sampleSize, 0.0);
     matrix y(nSpecies, sampleSize, 0.0);
 
-    int centerRabb = 10;
-    int widthRabb = 8;
+    double centerRabbRaw = 20;
+    double widthRabbRaw = 10;
     double maxRabb = 0.6;
 
-    int centerPred = 4;
-    int widthPred = 3;
-    double maxPred = 0.3;
+    double centerPredRaw = 8;
+    double widthPredRaw = 10;
+    double maxPred = 0.6;
 
-    for (size_t j = (centerRabb - widthRabb); j < (centerRabb + widthRabb); ++j)
+    int centerRabb = centerRabbRaw / dh;
+    int widthRabb = widthRabbRaw / dh;
+    int centerPred = centerPredRaw / dh;
+    int widthPred = widthPredRaw / dh;
+
+    for (size_t j = max(centerRabb - widthRabb, 0); j < (centerRabb + widthRabb); ++j)
     {
         x(0, j) = y(0, j) = (1.0 - (j - centerRabb) * (j - centerRabb) / float(widthRabb * widthRabb)) * maxRabb;
     }
-    for (size_t j = (centerPred - widthPred); j < (centerPred + widthPred); ++j)
+    for (size_t j = max(centerPred - widthPred,0); j < (centerPred + widthPred); ++j)
     {
-        x(1, j) = y(1, j) = (1.0 - (j - centerPred) * (j - centerPred) / float(widthRabb * widthRabb)) * maxPred;
+        x(1, j) = y(1, j) = (1.0 - double((j - centerPred) * (j - centerPred)) / double(widthPred * widthPred)) * maxPred;
     }
 
     // Initialize Observer, for result printing
@@ -70,9 +75,9 @@ int main(int argc, char **argv)
 
     cout << "Setup done, starting computation" << endl;
 
-    cpu_timer timer;
+    cpu_timer timer;/* 
     integrate_const(runge_kutta4<matrix>(), prey_predator_system(1.2),
-                    y, 0.0, tmax, dt, boost::ref(obs));
+                    y, 0.0, tmax, dt, boost::ref(obs)); */
     double run_time = static_cast<double>(timer.elapsed().wall) * 1.0e-9;
 
     cpu_timer timer_custom_gpu;

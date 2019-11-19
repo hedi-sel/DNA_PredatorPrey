@@ -24,10 +24,10 @@ const double C = 1.3;
 //
 const double t0 = 0.0;
 const double tmax = 100.0;
-const double dt = 0.1;
+const double dt = 0.01;
 
 const double xLength = 500;
-const double dh = 0.1;
+const double dh = 0.5;
 
 const std::string CpuOutputPath = "./outputTemoin";
 const std::string GpuOutputPath = "./output";

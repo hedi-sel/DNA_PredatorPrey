@@ -29,7 +29,9 @@ make
 Run
 ====================
 
+```c++
 run/predatorPrey
+```
 
 Plot results
 ====================
