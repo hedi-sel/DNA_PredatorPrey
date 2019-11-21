@@ -10,6 +10,10 @@ void prey_predator_system::operator()(const matrix &x, matrix &dxdt, double t) c
     {
         dxdt(0, j) = preyFunction(x(0, j), x(1, j), laplacien(&x(0, j)));
         dxdt(1, j) = predatorFunction(x(0, j), x(1, j), laplacien(&x(0, j)));
+        if(t==0 && laplacien(&x(0, j)) > 1)
+            printf("t= %f  pos = %i  x= %f  lapl= %f \n", t, j, x(0, j), laplacien(&x(0, j)));
+        if (t == 0 && laplacien(&x(1, j)) > 1)
+            printf("t= %f  pos = %i  x= %f  lapl= %f \n", t, j, x(1, j), laplacien(&x(1, j)));
     }
 
     for (size_t i = 0; i < x.size1(); ++i)

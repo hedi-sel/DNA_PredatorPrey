@@ -11,23 +11,28 @@ const double exo = 25.0;
 const double G = 140.0;
 const double Dp = 2000.0;
 const double tc = 1 / (k2 * pol * Kmp);
-const double g = k1 * G / (k2 * Kmp);
+const double g = k1 *G / (k2 * Kmp);
 const double B = b * k2 * Kmp * Kmp / k1;
 const double l = kn / kp;
 const double delta = (exo / pol) * (kp / k2 / Kmp);
 const double A = g - l * delta;
 const double K = (g - l * delta) / (B * g * g);
-const double d = 1.0;
+const double dp = 0.1;
+const double dn = 1.0;
 const double C = 1.3;
+
+//Uncomment this to remove all diffusion
 
 // Initial values
 //
 const double t0 = 0.0;
-const double tmax = 100.0;
-const double dt = 0.01;
+const double tmax = 1;
+const double dt = 1.0e-4;
 
-const double xLength = 500;
-const double dh = 0.5;
+const double printPeriod = 1;
+
+const double xLength = 10000;
+const double dh = 0.1;
 
 const std::string CpuOutputPath = "./outputTemoin";
 const std::string GpuOutputPath = "./output";

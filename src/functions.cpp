@@ -7,11 +7,11 @@ double laplacien(const double* position)
 
 double preyFunction(double n, double p, double d2n)
 {
-    return g * n * (1 - B * g * n) - p * n - l * delta * n / (1 + p) + d2n;
+    return g * n * (1 - B * g * n) - p * n - l * delta * n / (1 + p) + dn * d2n;
 }
 double predatorFunction(double n, double p, double d2p)
 {
-    return n * p - delta * p / (1 + p) + d * d2p;
+    return n * p - delta * p / (1 + p) + dp * d2p;
 }
 /*
     double preyFunctionTaylored(double n, double p, double d2n) const

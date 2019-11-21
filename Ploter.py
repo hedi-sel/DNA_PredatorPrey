@@ -1,34 +1,44 @@
+import sys
 import numpy as np
 import os
 #from scipy.integrate import odeint
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
-dataLocation = input("Data Location: (default: ./output)")
-if (dataLocation == ""):
-    dataLocation = "./output"
+outputName = sys.argv[-1]
+if (outputName == ""):
+    dataLocation = input("Data Location: (default: ./output)")
+    if (dataLocation == ""):
+        dataLocation = "./output"
+    printLocation = input("Plot Location: (default: ./plot)")
+    if (printLocation == ""):
+        printLocation = "./plot"
+else:
+    dataLocation = "./output/"+outputName
+    printLocation = "./plot/"+outputName
 
-printLocation = input("Plot Location: (default: ./plot)")
-if (printLocation == ""):
-    printLocation = "./plot"
 
 def readLine(line):
     values = []
+    nanCount = 0
+    infCount = 0
     for str in line.split("\t"):
         if "." in str or "e" in str:
             values.append(float(str))
         elif "nan" in str:
-            values.append(0)
-            print("Warning, there is a nan value")
+            values.append(-1)
+            nanCount += 1
         elif "inf" in str:
-            values.append(10)
-            print("Warning, there is an infinite value")
+            values.append(-2)
+            infCount += 1
         else:
             values.append(int(str))
-    return values
+    return values, nanCount, infCount
 
 
 def plotAndPrintData(fileName):
+    nanCount = 0
+    infCount = 0
     f = open(dataLocation+"/"+fileName, "r")
     lines = f.readlines()
 
@@ -41,10 +51,12 @@ def plotAndPrintData(fileName):
     ..
     """
 
-    shape = tuple(readLine(lines.pop(0)))
+    shape = tuple(readLine(lines.pop(0))[0])
     Z = np.zeros(shape)
     for line in lines:
-        values = readLine(line)
+        values, nan, inf = readLine(line)
+        nanCount += nan
+        infCount += inf
         z = values.pop()
         Z[tuple(values)] = z
 
@@ -52,25 +64,54 @@ def plotAndPrintData(fileName):
         X = np.linspace(1, shape[1], shape[1])
         plt.plot(X, Z[0, :], label='Prey')
         plt.plot(X, Z[1, :], label='Predator')
+        #plt.xticks(X/ 1000.)
+        plt.legend()
+        plt.ylabel('Species concentration (a.u.)')
+        plt.xlabel('x (mm)')
+        plt.grid(False)
+        plt.ylim((0, 4))
     elif (len(shape) == 3):
+        print("Warning, 3D is not yet supported")
         X = np.outer(np.linspace(0, shape[1]-1, shape[1]), np.ones(shape[2]))
         Y = np.outer(np.ones(shape[1]), np.linspace(0, shape[2]-1, shape[2]))
         ax = plt.figure().add_subplot(111, projection='3d')
-        ax.plot_surface(X,Y,Z)
+        ax.plot_surface(X, Y, Z)
 
     else:
         return
 
+    plt.show()
     plt.savefig(printLocation+"/"+fileName.replace(".dat", ".png"))
     plt.close()
 
+    if nanCount > 0:
+        print("Warning, there is ", nanCount, " nan values")
 
-for file in os.listdir(printLocation):
-    if ".png" in file:
-        os.remove(printLocation+"/"+file)
+    if infCount > 0:
+        print("Warning, there is ", infCount, " infinite values")
+
+
+if os.path.exists(printLocation):
+    keepgoing = input(
+        "The files already exist, you wanna overwrite?\ny to overwrite, n to abort, any other key to save in a another folder\n")
+    if (keepgoing == "y"):
+        for file in os.listdir(printLocation):
+            if ".png" in file:
+                os.remove(printLocation + "/" + file)
+    elif (keepgoing == "n"):
+        sys.exit("Left the program without plotting anything")
+    else:
+        i = 2
+        while os.path.exists(printLocation + "_" + str(i)):
+            i += 1
+        os.makedirs(printLocation + "_" + str(i))
+        printLocation = printLocation + "_" + str(i)
+else:
+    os.makedirs(printLocation)
 
 for file in os.listdir(dataLocation):
     plotAndPrintData(file)
+
 
 # ax = fig.add_subplot(111, projection='3d')
 # x, y = np.array(2), np.array(128)
