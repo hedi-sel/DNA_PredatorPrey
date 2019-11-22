@@ -62,7 +62,7 @@ void Iterator_system::iterate(double dt)
     assert(numBlocks * 32 * 32 > nSpecies * sampleSize);
     stepper(x, dxdt, nSpecies, sampleSize, t, dt);
     //rungeKutta4Stepper<<<numBlocks, threadsPerBlock>>>(x, dxdt, nSpecies, sampleSize, t, dt);
-    if (doPrint && t >= nextPrint)
+    if (doPrint && t >= nextPrint - dt / 2.)
     {
         printer(t);
         nextPrint += printPeriod;
