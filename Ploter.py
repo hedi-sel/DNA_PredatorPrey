@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
 outputName = sys.argv[-1]
+
 if (outputName == ""):
     dataLocation = input("Data Location: (default: ./output)")
     if (dataLocation == ""):
@@ -65,7 +66,7 @@ def plotAndPrintData(fileName):
         plt.plot(X, Z[0, :], label='Prey')
         plt.plot(X, Z[1, :], label='Predator')
         #plt.xticks(X/ 1000.)
-        plt.legend()
+        plt.legend(loc = 'upper right')
         plt.ylabel('Species concentration (a.u.)')
         plt.xlabel('x (mm)')
         plt.grid(False)
@@ -80,7 +81,6 @@ def plotAndPrintData(fileName):
     else:
         return
 
-    plt.show()
     plt.savefig(printLocation+"/"+fileName.replace(".dat", ".png"))
     plt.close()
 
@@ -111,6 +111,9 @@ else:
 
 for file in os.listdir(dataLocation):
     plotAndPrintData(file)
+
+os.system("./makegif.sh "+outputName)
+
 
 
 # ax = fig.add_subplot(111, projection='3d')

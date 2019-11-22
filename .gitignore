@@ -12,4 +12,3 @@ src/bin/*
 **/CMakeCache.txt
 **/cmake_install.cmake
 **.gif
-run.sh
