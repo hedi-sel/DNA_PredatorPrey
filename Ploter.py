@@ -8,12 +8,12 @@ from mpl_toolkits.mplot3d import Axes3D
 outputName = sys.argv[-1]
 
 if (outputName == ""):
-    dataLocation = input("Data Location: (default: ./output)")
+    dataLocation = input("Data Location: (default: ./output/default)")
     if (dataLocation == ""):
-        dataLocation = "./output"
-    printLocation = input("Plot Location: (default: ./plot)")
+        dataLocation = "./output/default"
+    printLocation = input("Plot Location: (default: ./plot/default)")
     if (printLocation == ""):
-        printLocation = "./plot"
+        printLocation = "./plot/default"
 else:
     dataLocation = "./output/"+outputName
     printLocation = "./plot/"+outputName

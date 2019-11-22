@@ -23,16 +23,26 @@ const double C = 1.3;
 
 //Uncomment this to remove all diffusion
 
-// Initial values
+// METADATA
 //
 const double t0 = 0.0;
-const double tmax = 2;
-const double dt = 1.0e-4;
+const double tmax = 100;
+const double dt = 1.0e-2;
 
 const double printPeriod = 1;
 
 const double xLength = 10000;
-const double dh = 0.1;
+const double dh = 1;
+
+// Initial values
+//
+const double centerRabbRaw = 5000;
+const double widthRabbRaw = 10000;
+const double maxRabb = 1;
+
+const double centerPredRaw = 2000;
+const double widthPredRaw = 4000;
+const double maxPred = 2;
 
 const std::string CpuOutputPath = "./outputTemoin";
 const std::string GpuOutputPath = "./output";

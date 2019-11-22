@@ -2,17 +2,15 @@
 #include <string>
 #include <stdio.h>
 #include <boost/filesystem.hpp>
+#include <boost/numeric/odeint.hpp>
+#include <boost/numeric/odeint/external/openmp/openmp.hpp>
+#include <boost/timer/timer.hpp>
 
 #include "constants.hpp"
 #include "PdeSystem/predator_prey_systems.hpp"
 #include "PDESystemCUDA/iterator_system.hpp"
 #include "PdeSystem/cudaComputer.hpp"
-
 #include "writeSnapshots.hpp"
-
-#include <boost/numeric/odeint.hpp>
-#include <boost/numeric/odeint/external/openmp/openmp.hpp>
-#include <boost/timer/timer.hpp>
 
 using boost::timer::cpu_timer;
 using namespace std;
@@ -27,31 +25,29 @@ int main(int argc, char **argv)
     matrix x(nSpecies, sampleSize, 0.0);
     matrix y(nSpecies, sampleSize, 0.0);
 
-    double centerRabbRaw = 5000;
-    double widthRabbRaw = 10000;
-    double maxRabb = 0.4;
-
-    double centerPredRaw = 2000;
-    double widthPredRaw = 4000;
-    double maxPred = 0.9;
-
     int centerRabb = centerRabbRaw / dh;
     int widthRabb = widthRabbRaw / dh;
     int centerPred = centerPredRaw / dh;
     int widthPred = widthPredRaw / dh;
 
-    for (size_t j = 0; j < sampleSize; j++)
+    double rabVal = pow(maxRabb, 1. / 3.);
+    double predVal = pow(maxPred, 1. / 3.);
+
+    for (size_t j = 1; j < sampleSize - 1; j++)
     {
         x(0, j) = y(0, j) = x(1, j) = y(1, j) = 0.1;
     }
-    for (size_t j = max(centerRabb - widthRabb, 0); j < min(centerRabb + widthRabb, (int)sampleSize); ++j)
+    for (size_t j = max(centerRabb - widthRabb, 1); j < min(centerRabb + widthRabb, (int)sampleSize - 1); ++j)
     {
-        x(0, j) = y(0, j) = 0.1 + pow((1.0 - (j - centerRabb) * (j - centerRabb) / float(widthRabb * widthRabb)) * maxRabb, 3);
+        x(0, j) = y(0, j) = 0.1 + pow((1.0 - (j - centerRabb) * (j - centerRabb) / double(widthRabb * widthRabb)) * rabVal, 3);
     }
-    for (size_t j = max(centerPred - widthPred, 0); j < min(centerPred + widthPred, (int)sampleSize); ++j)
+    for (size_t j = max(centerPred - widthPred, 1); j < min(centerPred + widthPred, (int)sampleSize - 1); ++j)
     {
-        x(1, j) = y(1, j) = 0.1 + pow((1.0 - double((j - centerPred) * (j - centerPred)) / double(widthPred * widthPred)) * maxPred, 3);
+        x(1, j) = y(1, j) = 0.1 + pow((1.0 - (j - centerPred) * (j - centerPred) / double(widthPred * widthPred)) * predVal, 3);
     }
+
+    x(0, 0) = y(0, 0) = x(1, 0) = y(1, 0) = 0;
+    x(0, sampleSize - 1) = y(0, sampleSize - 1) = x(1, sampleSize - 1) = y(1, sampleSize - 1) = 0;
 
     // Initialize Observer, for result printing
 
@@ -76,8 +72,8 @@ int main(int argc, char **argv)
 
     cout << "Setup done, starting computation" << endl;
 
-    cpu_timer timer;
-    /* integrate_const(runge_kutta4<matrix>(), prey_predator_system(1.2),
+    cpu_timer timer; /* 
+    integrate_const(runge_kutta4<matrix>(), prey_predator_system(1.2),
                     y, 0.0, tmax, dt, boost::ref(obs)); */
     double run_time = static_cast<double>(timer.elapsed().wall) * 1.0e-9;
 

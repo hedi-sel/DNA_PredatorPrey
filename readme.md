@@ -42,8 +42,7 @@ To plot the results as a series of graphs, in the plot/ subdirectory:
 python3 Ploter.py
 ```
 
-To make the plotted graphs into a more explicit video
-
+To make a clip out of the ploted graphs
 ```c++
-convert -delay 10 -loop 0 $(ls -1 plot/*.png | sort -V) clip.gif
+makegif.sh
 ```
