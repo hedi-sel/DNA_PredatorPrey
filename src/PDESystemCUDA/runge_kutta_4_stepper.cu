@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include <functions.h>
+#include <utilitary/functions.h>
 #include <assert.h>
 __device__ int position()
 {

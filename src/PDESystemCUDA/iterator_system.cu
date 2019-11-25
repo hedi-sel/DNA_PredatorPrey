@@ -9,7 +9,7 @@
 #include "runge_kutta_4_stepper.hpp"
 #include "iterator_system.hpp"
 #include <constants.hpp>
-#include <functions.h>
+#include <utilitary/functions.h>
 
 #include "runge_kutta_4_stepper.cu"
 

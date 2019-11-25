@@ -26,22 +26,22 @@ const double C = 1.3;
 // METADATA
 //
 const double t0 = 0.0;
-const double tmax = 100;
-const double dt = 1.0e-2;
+const double tmax = 1;
+const double dt = 1.0e-4;
 
 const double printPeriod = 1;
 
-const double xLength = 10000;
-const double dh = 1;
+const double xLength = 1000;
+const double dh = 10;
 
 // Initial values
 //
-const double centerRabbRaw = 5000;
-const double widthRabbRaw = 10000;
+const double centerRabbRaw = 500;
+const double widthRabbRaw = 1000;
 const double maxRabb = 1;
 
-const double centerPredRaw = 2000;
-const double widthPredRaw = 4000;
+const double centerPredRaw = 200;
+const double widthPredRaw = 400;
 const double maxPred = 2;
 
 const std::string CpuOutputPath = "./outputTemoin";

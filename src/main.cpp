@@ -10,7 +10,8 @@
 #include "PdeSystem/predator_prey_systems.hpp"
 #include "PDESystemCUDA/iterator_system.hpp"
 #include "PdeSystem/cudaComputer.hpp"
-#include "writeSnapshots.hpp"
+#include "utilitary/writeSnapshots.hpp"
+#include "utilitary/initialConditionsBuilder.hpp"
 
 using boost::timer::cpu_timer;
 using namespace std;
@@ -30,23 +31,10 @@ int main(int argc, char **argv)
     int centerPred = centerPredRaw / dh;
     int widthPred = widthPredRaw / dh;
 
-    double rabVal = pow(maxRabb, 1. / 3.);
-    double predVal = pow(maxPred, 1. / 3.);
-
-    auto initCondFunc = [](size_t j, double max, double center, double width) {
-        return max * exp(-(j - center) * (j - center) / double(width* width));
-    };
-    for (size_t j = 1; j < sampleSize - 1; ++j)
-    {
-        x(0, j) = y(0, j) = initCondFunc(j, maxRabb, centerRabb, widthRabb);
-    }
-    for (size_t j = 1; j < sampleSize - 1; ++j)
-    {
-        x(1, j) = y(1, j) = initCondFunc(j, maxPred, centerPred, widthPred);
-    }
-
-    x(0, 0) = y(0, 0) = x(1, 0) = y(1, 0) = 0;
-    x(0, sampleSize - 1) = y(0, sampleSize - 1) = x(1, sampleSize - 1) = y(1, sampleSize - 1) = 0;
+    gaussianMaker(x, 0, sampleSize, maxRabb, centerRabb, widthRabb);
+    gaussianMaker(y, 0, sampleSize, maxRabb, centerRabb, widthRabb);
+    gaussianMaker(x, 1, sampleSize, maxPred, centerPred, widthPred);
+    gaussianMaker(y, 1, sampleSize, maxPred, centerPred, widthPred);
 
     // Initialize Observer, for result printing
 
@@ -71,13 +59,13 @@ int main(int argc, char **argv)
 
     cout << "Setup done, starting computation" << endl;
 
-    cpu_timer timer; /* 
+    cpu_timer timer;
     integrate_const(runge_kutta4<matrix>(), prey_predator_system(1.2),
-                    y, 0.0, tmax, dt, boost::ref(obs)); */
+                    y, 0.0, tmax, dt);//, boost::ref(obs));
     double run_time = static_cast<double>(timer.elapsed().wall) * 1.0e-9;
 
     cpu_timer timer_custom_gpu;
-    Iterator_system iterator(x.data().begin(), nSpecies, sampleSize, t0, printPeriod);
+    Iterator_system iterator(x.data().begin(), nSpecies, sampleSize, t0, 0);
     iterator.iterate(dt, tmax);
     double run_time_custom_gpu = static_cast<double>(timer_custom_gpu.elapsed().wall) * 1.0e-9;
 
