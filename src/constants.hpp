@@ -26,13 +26,13 @@ const double C = 1.3;
 // METADATA
 //
 const double t0 = 0.0;
-const double tmax = 1;
-const double dt = 1.0e-4;
+const double tmax = 10;
+const double dt = 1.0e-3;
 
 const double printPeriod = 1;
 
 const double xLength = 1000;
-const double dh = 10;
+const double dh = 0.1;
 
 // Initial values
 //

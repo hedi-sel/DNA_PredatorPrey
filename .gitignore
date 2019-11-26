@@ -5,8 +5,9 @@
 plot/*
 run/*
 output/*
-tests/*
-src/bin/*
+performance/*
+clips/*
+
 **/CMakeFiles
 **/Makefile
 **/CMakeCache.txt

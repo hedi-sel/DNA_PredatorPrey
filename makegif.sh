@@ -5,7 +5,7 @@ then
     echo "Want to save this gif to HediPC? ? (y)" && read doSave &&
     if [ _$doSave = _y ];
     then
-        scp clip.gif hediPC:Documents/Results/${1}.gif;
+        scp clips/${1}.gif hediPC:Documents/Results/${1}.gif;
     fi
     echo "Job finished!"
 fi

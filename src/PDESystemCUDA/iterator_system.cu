@@ -41,6 +41,10 @@ Iterator_system::Iterator_system(double *x, int nSpecies, int sampleSize, double
 
     this->stepper = rungeKutta4Stepper;
 
+    std::ostringstream stream;
+    stream << "x=" << xLength / 1000.0 << "mm_dh=" << dh << "µm_t=" << tmax << "s_dt=" << dt * 1000.0 << "ms";
+    dataName = stream.str();
+
     if (doPrint)
     {
         printer();
@@ -71,8 +75,9 @@ void Iterator_system::iterate(double dt)
 
 void Iterator_system::iterate(double dt, double tmax)
 {
+    bool printendl = false;
     int n_points = 50;
-    auto printProgress = [n_points](double start, double end, double current) {
+    auto printProgress = [n_points, &printendl](double start, double end, double current) {
         int current_point = (int)((n_points + 1) * (current - start) / (end - start));
         std::cout << "\r [";
         for (int i = 0; i < n_points; i++)
@@ -83,6 +88,7 @@ void Iterator_system::iterate(double dt, double tmax)
                 std::cout << ".";
         };
         std::cout << "]";
+        printendl = true;
     };
     double start = this->t;
     int printPeriod = (int)(tmax - start) / (dt * n_points);
@@ -97,7 +103,8 @@ void Iterator_system::iterate(double dt, double tmax)
             printProgress(start, tmax, t);
         };
     };
-    std::cout << std::endl;
+    if (printendl)
+        std::cout << std::endl;
 }
 
 void Iterator_system::iterate(double dt, int n_steps)
@@ -108,12 +115,8 @@ void Iterator_system::iterate(double dt, int n_steps)
 void Iterator_system::printer()
 {
     std::ostringstream stream;
-    stream << "x=" << xLength / 1000.0 << "mm_dh=" << dh << "µm_t=" << tmax << "s_dt=" << dt * 1000.0 << "ms";
-    dataName = stream.str();
-
-    std::ostringstream stream2;
-    stream2 << GpuOutputPath << "/" << dataName;
-    outputPath = stream2.str();
+    stream << GpuOutputPath << "/" << dataName;
+    outputPath = stream.str();
     if (!boost::filesystem::exists(outputPath))
         boost::filesystem::create_directory(outputPath);
     else
