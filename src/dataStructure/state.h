@@ -20,12 +20,12 @@ public:
     State(int, int);
 
     // 2D element reader
-    T& operator()(int, int, int);
+    __device__ __host__ T &operator()(int, int, int);
     // 1D element reader
-    T& operator()(int, int);
+    __device__ __host__ T &operator()(int, int);
 
     //Get data array
-    T* getRawData();
+    T *getRawData();
 
     //Destructor
     ~State();
