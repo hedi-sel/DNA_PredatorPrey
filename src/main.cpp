@@ -85,7 +85,7 @@ void PerformanceOriented(char arg)
 
 int main(int argc, char **argv)
 {
-    initialization();
+    /*     initialization();
 
     if (argc > 1)
     {
@@ -99,6 +99,6 @@ int main(int argc, char **argv)
     {
         CpuGpuCompare();
     }
-
+*/
     return 0;
 }

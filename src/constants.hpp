@@ -1,5 +1,7 @@
 #include <string>
 
+const int BLOCK_SIZE = 32;
+
 const double k1 = 0.003;
 const double k2 = 0.004;
 const double kn = 0.01;

@@ -61,9 +61,9 @@ Iterator_system::~Iterator_system()
 void Iterator_system::iterate(double dt)
 {
     t += dt;
-    dim3 threadsPerBlock(32, 32);
+    dim3 threadsPerBlock(BLOCK_SIZE, BLOCK_SIZE);
     int numBlocks = (nSpecies * sampleSize + threadsPerBlock.x * threadsPerBlock.y - 1) / (threadsPerBlock.x * threadsPerBlock.y);
-    assert(numBlocks * 32 * 32 > nSpecies * sampleSize);
+    assert(numBlocks * BLOCK_SIZE * BLOCK_SIZE > nSpecies * sampleSize);
     stepper(x, dxdt, nSpecies, sampleSize, t, dt);
     //rungeKutta4Stepper<<<numBlocks, threadsPerBlock>>>(x, dxdt, nSpecies, sampleSize, t, dt);
     if (doPrint && t >= nextPrint - dt / 2.)
