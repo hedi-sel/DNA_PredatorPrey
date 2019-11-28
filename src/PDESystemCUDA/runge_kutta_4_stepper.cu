@@ -1,60 +1,59 @@
 #include <stdio.h>
 #include <utilitary/functions.h>
 #include <assert.h>
-__device__ int position()
+
+__device__ int position(State<double> &x)
 {
+    //TODO make this better
     return threadIdx.x + threadIdx.y * blockDim.x + blockIdx.x * blockDim.x * blockDim.y;
+    /* printf("milestone4 %i %i %b /n", rawPos, x.GetSize(), rawPos > x.GetSize());
+    if (rawPos > x.GetSize())
+        return dim3(0, 0, 0);
+    return dim3(rawPos % x.nSpecies, rawPos / x.nSpecies, 0); */
 }
 
-__device__ double differentiate(double *x, int nSpecies, int sampleSize, double t, int pos)
+__device__ double differentiate(State<double> &x, double t, dim3 pos)
 {
-    if ((pos + 1) % sampleSize > 1)
+    if ((pos.x + 1) % x.GetSize() > 1)
     {
-        if (!(&x[pos])[0] == x[pos])
-            printf("not the right position at %i at time %d \n", pos, t);
-
-        if (!(&x[pos])[1] == x[pos + 1])
-            printf("not the right position at %i at time %d \n", pos, t);
-
-        if (!(&x[pos])[-1] == x[pos - 1])
-            printf("not the right position at %i at time %d \n", pos, t);
-        return (pos < sampleSize) ? devPreyFunction(x[pos], x[pos + sampleSize], devLaplacien(&x[pos]))
-                                  : devPredatorFunction(x[pos % sampleSize], x[pos], devLaplacien(&x[pos]));
+        return (pos.x == 0) ? devPreyFunction(x(pos), x(pos.x + 1, pos.y, pos.z), devLaplacien(&x(pos)))
+                            : devPredatorFunction(x(pos.x - 1, pos.y, pos.z), x(pos), devLaplacien(&x(pos)));
     }
     else
         return 0;
 }
 
-__global__ void rungeKutta4StepperDev(double *x, double *dxdt, int nSpecies, int sampleSize, double t, double dt)
+__global__ void rungeKutta4StepperDev(State<double> &x, double t, double dt)
 {
-    int pos = position();
-    if (pos > nSpecies * sampleSize)
-        return;
-
-    //if (x[pos] > 1.0 || x[pos] < 0.0)
-    //printf("t= %d  pos = %i  x= %d  lapl= %d \n", t, pos, x[pos], devLaplacien(&x[pos]));
-    double k1 = dt * differentiate(x, nSpecies, sampleSize, t, pos);
+    int rawPos = position(x);
+    dim3 pos(rawPos % x.nSpecies, rawPos / x.nSpecies, 0); /* 
+    dim3 pos = position(x);
+    printf("%i", pos.x);
+    if (pos.x == NULL)
+        return; */
+    printf("milestone \n");
+    double k1 = dt * differentiate(x, t, pos);
     __syncthreads();
-    x[pos] += k1 / 2.0;
+    x(pos) += k1 / 2.0;
     __syncthreads();
-    double k2 = dt * differentiate(x, nSpecies, sampleSize, t + dt / 2.0, pos);
+    double k2 = dt * differentiate(x, t + dt / 2.0, pos);
     __syncthreads();
-    x[pos] += (k2 - k1) / 2.0;
+    x(pos) += (k2 - k1) / 2.0;
     __syncthreads();
-    double k3 = dt * differentiate(x, nSpecies, sampleSize, t + dt / 2.0, pos);
+    double k3 = dt * differentiate(x, t + dt / 2.0, pos);
     __syncthreads();
-    x[pos] += k3 - k2 / 2.0;
+    x(pos) += k3 - k2 / 2.0;
     __syncthreads();
-    double k4 = dt * differentiate(x, nSpecies, sampleSize, t + dt, pos);
+    double k4 = dt * differentiate(x, t + dt, pos);
     __syncthreads();
-    x[pos] += -k3 + (k1 + 2 * k2 + 2 * k3 + k4) / 6.0;
-    
+    x(pos) += -k3 + (k1 + 2 * k2 + 2 * k3 + k4) / 6.0;
 }
 
-void rungeKutta4Stepper(double *x, double *dxdt, int nSpecies, int sampleSize, double t, double dt)
+void rungeKutta4Stepper(State<double> &x, double t, double dt)
 {
     dim3 threadsPerBlock(32, 32);
-    int numBlocks = (nSpecies * sampleSize + threadsPerBlock.x * threadsPerBlock.y - 1) / (threadsPerBlock.x * threadsPerBlock.y);
-    assert(numBlocks * 32 * 32 > nSpecies * sampleSize);
-    rungeKutta4StepperDev<<<numBlocks, threadsPerBlock>>>(x, dxdt, nSpecies, sampleSize, t, dt);
+    int numBlocks = (x.GetSize() + threadsPerBlock.x * threadsPerBlock.y - 1) / (threadsPerBlock.x * threadsPerBlock.y);
+    assert(numBlocks * BLOCK_SIZE * BLOCK_SIZE > x.GetSize());
+    rungeKutta4StepperDev<<<numBlocks, threadsPerBlock>>>(x, t, dt);
+    cudaDeviceSynchronize();
 }

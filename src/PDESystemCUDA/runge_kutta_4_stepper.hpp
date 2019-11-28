@@ -1,1 +1,3 @@
-void rungeKutta4Stepper(double *, double *, int, int, double, double);
+#include <dataStructure/state.h>
+
+void rungeKutta4Stepper(State<double>&, double, double);

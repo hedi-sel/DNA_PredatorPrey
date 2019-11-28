@@ -1,3 +1,4 @@
+#pragma once
 template <typename T>
 class State
 {
@@ -17,19 +18,25 @@ public:
     const int sampleSizeY;
     const int subSampleSizeX;
     const int subSampleSizeY;
-    
-    // 2D constructors
-    State(int, int, int = 1);
-    // 1D Constructor
-    // State(int, int);
+
+    bool isDeviceData;
+
+    // Constructor, set bool = true to create data in device memory
+    State(int, int, int = 1, bool = false);
+    // Copy constructor, set bool = true to make a device copy
+    State(State<T>&, bool = false);
 
     // 2D element reader
     __device__ __host__ T &operator()(int, int, int);
     // 1D element reader
     __device__ __host__ T &operator()(int, int);
 
+    __device__ __host__ T &operator()(dim3);
+
     //Get data array
-    T *getRawData();
+    T *GetRawData();
+
+    __device__ __host__ int GetSize();
 
     //Destructor
     ~State();

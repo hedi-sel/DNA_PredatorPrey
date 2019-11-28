@@ -28,16 +28,13 @@ inline void gpuAssert(cudaError_t code, const char *file, int line, bool abort =
     }
 }
 
-Iterator_system::Iterator_system(double *x, int nSpecies, int sampleSize, double t0, double print)
+Iterator_system::Iterator_system(State<double> &h_state, double t0, double print)
+    : state(h_state, true)
 {
-    this->nSpecies = nSpecies;
-    this->sampleSize = sampleSize;
     this->doPrint = print > 0;
     this->printPeriod = print;
     this->t = t0;
-    gpuErrchk(cudaMalloc(&this->x, nSpecies * sampleSize * sizeof(double)));
-    gpuErrchk(cudaMalloc(&this->dxdt, nSpecies * sampleSize * sizeof(double)));
-    gpuErrchk(cudaMemcpy(this->x, x, nSpecies * sampleSize * sizeof(double), cudaMemcpyHostToDevice));
+    //gpuErrchk(this.state = h_state.GetDeviceCopy());
 
     this->stepper = rungeKutta4Stepper;
 
@@ -47,33 +44,32 @@ Iterator_system::Iterator_system(double *x, int nSpecies, int sampleSize, double
 
     if (doPrint)
     {
-        printer();
-        printer(0.0);
+        Print();
+        Print(0.0);
         nextPrint += printPeriod;
     }
 }
 Iterator_system::~Iterator_system()
 {
-    gpuErrchk(cudaFree(x));
-    gpuErrchk(cudaFree(dxdt));
+    gpuErrchk(cudaFree(state.GetRawData()));
 };
 
-void Iterator_system::iterate(double dt)
+void Iterator_system::Iterate(double dt)
 {
     t += dt;
     dim3 threadsPerBlock(BLOCK_SIZE, BLOCK_SIZE);
-    int numBlocks = (nSpecies * sampleSize + threadsPerBlock.x * threadsPerBlock.y - 1) / (threadsPerBlock.x * threadsPerBlock.y);
-    assert(numBlocks * BLOCK_SIZE * BLOCK_SIZE > nSpecies * sampleSize);
-    stepper(x, dxdt, nSpecies, sampleSize, t, dt);
+    int numBlocks = (state.GetSize() - 1) / (threadsPerBlock.x * threadsPerBlock.y) + 1;
+    assert(numBlocks * BLOCK_SIZE * BLOCK_SIZE > state.GetSize());
+    stepper(state, t, dt);
     //rungeKutta4Stepper<<<numBlocks, threadsPerBlock>>>(x, dxdt, nSpecies, sampleSize, t, dt);
     if (doPrint && t >= nextPrint - dt / 2.)
     {
-        printer(t);
+        Print(t);
         nextPrint += printPeriod;
     }
 }
 
-void Iterator_system::iterate(double dt, double tmax)
+void Iterator_system::Iterate(double dt, double tmax)
 {
     bool printendl = false;
     int n_points = 50;
@@ -90,12 +86,13 @@ void Iterator_system::iterate(double dt, double tmax)
         std::cout << "]";
         printendl = true;
     };
+
     double start = this->t;
     int printPeriod = (int)(tmax - start) / (dt * n_points);
     int timeSinceLastPrint = 0;
     while (this->t < tmax - dt / 2.0)
     {
-        iterate(dt);
+        Iterate(dt);
         timeSinceLastPrint++;
         if (timeSinceLastPrint > printPeriod)
         {
@@ -107,12 +104,12 @@ void Iterator_system::iterate(double dt, double tmax)
         std::cout << std::endl;
 }
 
-void Iterator_system::iterate(double dt, int n_steps)
+void Iterator_system::Iterate(double dt, int n_steps)
 {
-    iterate(dt, t + dt * n_steps);
+    Iterate(dt, t + dt * n_steps);
 }
 
-void Iterator_system::printer()
+void Iterator_system::Print()
 {
     std::ostringstream stream;
     stream << GpuOutputPath << "/" << dataName;
@@ -128,19 +125,19 @@ void Iterator_system::printer()
     }
 }
 
-void Iterator_system::printer(double t)
+void Iterator_system::Print(double t)
 {
-    double *xHost = new double[nSpecies * sampleSize];
-    cudaMemcpy(xHost, x, nSpecies * sampleSize * sizeof(double), cudaMemcpyDeviceToHost);
+    double *xHost = new double[state.GetSize()];
+    cudaMemcpy(xHost, state.GetRawData(), state.GetSize() * sizeof(double), cudaMemcpyDeviceToHost);
     std::ostringstream stream;
     stream << outputPath << "/state_at_t=" << t << "s.dat";
     std::ofstream fout(stream.str());
-    fout << nSpecies << "\t" << sampleSize << "\n";
-    for (size_t i = 0; i < nSpecies; ++i)
+    fout << state.nSpecies << "\t" << state.sampleSizeX << "\n";
+    for (size_t i = 0; i < state.nSpecies; ++i)
     {
-        for (size_t j = 0; j < sampleSize; ++j)
+        for (size_t j = 0; j < state.sampleSizeX; ++j)
         {
-            fout << i << "\t" << j << "\t" << xHost[i * sampleSize + j] << "\n";
+            fout << i << "\t" << j << "\t" << xHost[i * state.sampleSizeX + j] << "\n";
         }
     }
 }

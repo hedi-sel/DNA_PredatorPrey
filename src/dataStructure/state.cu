@@ -1,12 +1,34 @@
 #include "state.h"
 #include <stdio.h>
+#include <assert.h>
 
 template <typename T>
-State<T>::State(int nSp, int samSizX, int samSizY)
+State<T>::State(const int nSp, const int samSizX, const int samSizY, bool isDevice)
     : nSpecies(nSp), sampleSizeX(samSizX), sampleSizeY(samSizY),
-      subSampleSizeX(samSizX), subSampleSizeY(samSizY)
+      subSampleSizeX(samSizX), subSampleSizeY(samSizY), isDeviceData(isDevice)
 {
-    data = new T[nSp * samSizX * samSizY];
+    if (isDevice)
+    {
+        cudaMalloc(&data, GetSize() * sizeof(T));
+    }
+    else
+    {
+        data = new T[GetSize()];
+    }
+}
+
+template <typename T>
+State<T>::State(State<T> &state, bool isDevice)
+    : State(state.nSpecies, state.sampleSizeX, state.sampleSizeY, isDevice)
+{
+    assert(state.isDeviceData == false);
+    if (isDevice)
+        cudaMemcpy(data, state.GetRawData(), GetSize() * sizeof(T),
+                   cudaMemcpyHostToDevice);
+    else
+    {
+        throw "Cannot make these kind of copies yet";
+    }
 }
 
 template <typename T>
@@ -34,9 +56,21 @@ T &State<T>::operator()(int s, int x)
 }
 
 template <typename T>
-T *State<T>::getRawData()
+T &State<T>::operator()(dim3 position)
+{
+    return this->operator()(position.x, position.y, position.z);
+}
+
+template <typename T>
+T *State<T>::GetRawData()
 {
     return data;
+}
+
+template <typename T>
+int State<T>::GetSize()
+{
+    return nSpecies * sampleSizeX * sampleSizeY;
 }
 
 template <typename T>

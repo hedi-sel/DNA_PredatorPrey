@@ -33,8 +33,8 @@ void CpuGpuCompare()
     double run_time = static_cast<double>(timer.elapsed().wall) * 1.0e-9;
 
     cpu_timer timer_gpu;
-    Iterator_system iterator(x.getRawData(), nSpecies, sampleSize, t0, printPeriod);
-    iterator.iterate(dt, tmax);
+    Iterator_system iterator(x, t0, printPeriod);
+    iterator.Iterate(dt, tmax);
     double run_time_gpu = static_cast<double>(timer_gpu.elapsed().wall) * 1.0e-9;
 
     std::cout << "Ended computation in: " << std::endl;
@@ -56,8 +56,8 @@ void PerformanceOriented(char arg)
     std::string dataName = "cpu";
     if (arg == 'g')
     {
-        Iterator_system iterator(x.getRawData(), nSpecies, sampleSize, t0, 0);
-        iterator.iterate(dt, tmax);
+        Iterator_system iterator(x, t0, 0);
+        iterator.Iterate(dt, tmax);
         dataName = iterator.dataName;
     }
     double run_time = static_cast<double>(timer.elapsed().wall) * 1.0e-9;
