@@ -4,20 +4,23 @@ class State
     // Data structure that captures the state of the system
     // Can handle 1D and 2D
 private:
-    int nSpecies;
-    int dim;
-    int sampleSizeX;
-    int sampleSizeY;
+    const int nSpecies;
+    const int sampleSizeX;
+    const int sampleSizeY;
+    const int subSampleSizeX;
+    const int subSampleSizeY;
     T *data;
+
+    T tdefVal;
 
     double dx;
     double dt;
 
 public:
     // 2D constructors
-    State(int, int, int);
+    State(int, int, int = 1);
     // 1D Constructor
-    State(int, int);
+    // State(int, int);
 
     // 2D element reader
     __device__ __host__ T &operator()(int, int, int);

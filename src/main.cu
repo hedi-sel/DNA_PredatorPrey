@@ -74,18 +74,18 @@ int main(int argc, char **argv)
 {
     initialization();
 
-    /* if (argc > 1)
+    if (argc > 1)
     {
         char arg = argv[1][0];
         if (arg == 'c' || arg == 'g')
             PerformanceOriented(arg);
         else
-            arg = 'g';
+            PerformanceOriented('g');
     }
     else
     {
         CpuGpuCompare();
     }
- */
+
     return 0;
 }
