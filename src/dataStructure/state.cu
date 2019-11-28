@@ -3,7 +3,7 @@
 #include <assert.h>
 
 template <typename T>
-State<T>::State(const int nSp, const int samSizX, const int samSizY, bool isDevice)
+__host__ State<T>::State(const int nSp, const int samSizX, const int samSizY, bool isDevice)
     : nSpecies(nSp), sampleSizeX(samSizX), sampleSizeY(samSizY),
       subSampleSizeX(samSizX), subSampleSizeY(samSizY), isDeviceData(isDevice)
 {
@@ -18,7 +18,7 @@ State<T>::State(const int nSp, const int samSizX, const int samSizY, bool isDevi
 }
 
 template <typename T>
-State<T>::State(State<T> &state, bool isDevice)
+__host__ State<T>::State(State<T> &state, bool isDevice)
     : State(state.nSpecies, state.sampleSizeX, state.sampleSizeY, isDevice)
 {
     assert(state.isDeviceData == false);
@@ -32,7 +32,7 @@ State<T>::State(State<T> &state, bool isDevice)
 }
 
 template <typename T>
-T &State<T>::operator()(int s, int x, int y)
+__device__ __host__ T &State<T>::operator()(int s, int x, int y)
 {
     if (s < 0 || s > nSpecies)
     {
@@ -48,36 +48,35 @@ T &State<T>::operator()(int s, int x, int y)
     }
     return data[s * sampleSizeX * sampleSizeY + x * sampleSizeY + y];
 }
-
 template <typename T>
-T &State<T>::operator()(int s, int x)
+__device__ __host__ T &State<T>::operator()(int s, int x)
 {
     return this->operator()(s, x, 0);
 }
 
 template <typename T>
-T &State<T>::operator()(dim3 position)
+__device__ __host__ T &State<T>::operator()(dim3 position)
 {
     return this->operator()(position.x, position.y, position.z);
 }
 
 template <typename T>
-T *State<T>::GetRawData()
+__device__ __host__ T *State<T>::GetRawData()
 {
     return data;
 }
 
 template <typename T>
-int State<T>::GetSize()
+__device__ __host__ int State<T>::GetSize()
 {
     return nSpecies * sampleSizeX * sampleSizeY;
 }
 
 template <typename T>
-State<T>::~State()
+__host__ State<T>::~State()
 {
     delete[] data;
 }
 
-template class State<double>;
-template class State<float>;
+template __device__ __host__ class State<double>;
+template __device__ __host__ class State<float>;

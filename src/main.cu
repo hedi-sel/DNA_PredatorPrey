@@ -12,7 +12,7 @@
 using boost::timer::cpu_timer;
 
 const size_t nSpecies = 2, sampleSize = (size_t)(xLength / dh);
-State<double> x(nSpecies, sampleSize);
+State<double> x(nSpecies, sampleSize, 1, true);
 
 void initialization()
 {

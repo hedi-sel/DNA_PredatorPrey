@@ -23,6 +23,6 @@ public:
 private:
     double printPeriod = 1.0;
     double nextPrint = 0.0;
-    State<double> state;
+    State<double>& state;
     Stepper stepper;
 };

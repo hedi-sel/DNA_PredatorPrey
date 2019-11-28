@@ -29,7 +29,7 @@ inline void gpuAssert(cudaError_t code, const char *file, int line, bool abort =
 }
 
 Iterator_system::Iterator_system(State<double> &h_state, double t0, double print)
-    : state(h_state, true)
+    : state(h_state)
 {
     this->doPrint = print > 0;
     this->printPeriod = print;
@@ -49,10 +49,6 @@ Iterator_system::Iterator_system(State<double> &h_state, double t0, double print
         nextPrint += printPeriod;
     }
 }
-Iterator_system::~Iterator_system()
-{
-    gpuErrchk(cudaFree(state.GetRawData()));
-};
 
 void Iterator_system::Iterate(double dt)
 {
@@ -141,3 +137,8 @@ void Iterator_system::Print(double t)
         }
     }
 }
+
+Iterator_system::~Iterator_system()
+{
+    gpuErrchk(cudaFree(state.GetRawData()));
+};
