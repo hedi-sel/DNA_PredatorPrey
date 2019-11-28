@@ -4,11 +4,6 @@ class State
     // Data structure that captures the state of the system
     // Can handle 1D and 2D
 private:
-    const int nSpecies;
-    const int sampleSizeX;
-    const int sampleSizeY;
-    const int subSampleSizeX;
-    const int subSampleSizeY;
     T *data;
 
     T tdefVal;
@@ -17,6 +12,12 @@ private:
     double dt;
 
 public:
+    const int nSpecies;
+    const int sampleSizeX;
+    const int sampleSizeY;
+    const int subSampleSizeX;
+    const int subSampleSizeY;
+    
     // 2D constructors
     State(int, int, int = 1);
     // 1D Constructor

@@ -20,7 +20,6 @@ void initialization()
     int widthRabb = widthRabbRaw / dh;
     int centerPred = centerPredRaw / dh;
     int widthPred = widthPredRaw / dh;
-
     gaussianMaker(x, 0, sampleSize, maxRabb, centerRabb, widthRabb);
     gaussianMaker(x, 1, sampleSize, maxPred, centerPred, widthPred);
 }
