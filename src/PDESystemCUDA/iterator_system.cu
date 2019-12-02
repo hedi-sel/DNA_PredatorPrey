@@ -10,23 +10,8 @@
 #include "iterator_system.hpp"
 #include <constants.hpp>
 #include <utilitary/functions.h>
-
 #include "runge_kutta_4_stepper.cu"
-
-#define gpuErrchk(ans)                        \
-    {                                         \
-        gpuAssert((ans), __FILE__, __LINE__); \
-    }
-
-inline void gpuAssert(cudaError_t code, const char *file, int line, bool abort = true)
-{
-    if (code != cudaSuccess)
-    {
-        fprintf(stderr, "GPUassert: %s %s %d\n", cudaGetErrorString(code), file, line);
-        if (abort)
-            exit(code);
-    }
-}
+#include <utilitary/cudaErrorCheck.h>
 
 Iterator_system::Iterator_system(State<double> &h_state, double t0, double print)
     : state(h_state)
@@ -124,7 +109,7 @@ void Iterator_system::Print()
 void Iterator_system::Print(double t)
 {
     double *xHost = new double[state.GetSize()];
-    cudaMemcpy(xHost, state.GetRawData(), state.GetSize() * sizeof(double), cudaMemcpyDeviceToHost);
+    gpuErrchk(cudaMemcpy(xHost, state.GetRawData(), state.GetSize() * sizeof(double), cudaMemcpyDeviceToHost));
     std::ostringstream stream;
     stream << outputPath << "/state_at_t=" << t << "s.dat";
     std::ofstream fout(stream.str());
@@ -138,7 +123,6 @@ void Iterator_system::Print(double t)
     }
 }
 
-Iterator_system::~Iterator_system()
-{
-    gpuErrchk(cudaFree(state.GetRawData()));
+Iterator_system::~Iterator_system(){
+    gpuErrchk(cudaFree(state.data));
 };
