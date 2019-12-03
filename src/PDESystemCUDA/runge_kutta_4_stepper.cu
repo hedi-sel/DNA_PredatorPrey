@@ -14,19 +14,21 @@ __device__ double differentiate(State<double> &x, double t, dim3 pos)
     if ((pos.y + 1) % x.sampleSizeX > 1)
     {
         //printf("%f ",x(pos));
-        return (pos.x == 0) ? devPreyFunction(x(pos), x(pos.x + 1, pos.y, pos.z), devLaplacien(&x(pos)))
-                            : devPredatorFunction(x(pos.x - 1, pos.y, pos.z), x(pos), devLaplacien(&x(pos)));
+        return (pos.x == 0) ? devPreyFunction(x(pos), x(pos.x + 1, pos.y, pos.z), devLaplacien(&x(pos), x))
+                            : devPredatorFunction(x(pos.x - 1, pos.y, pos.z), x(pos), devLaplacien(&x(pos), x));
     }
     else
         return 0;
 }
 
-__global__ void rungeKutta4StepperDev(State<double> x, double t, double dt)
+__global__ void rungeKutta4StepperDev(State<double>& x, double t, double dt)
 {
     dim3 pos = position();
     //dim3 pos(pos);
-    if (pos.y >= x.sampleSizeX)
-        return;
+    //printf("%f ", x_dev(pos)); 
+    
+     if (pos.y >= x.sampleSizeX) return;
+     
     double k1 = dt * differentiate(x, t, pos);
     __syncthreads();
     x(pos) += k1 / 2.0;
@@ -41,7 +43,7 @@ __global__ void rungeKutta4StepperDev(State<double> x, double t, double dt)
     __syncthreads();
     double k4 = dt * differentiate(x, t + dt, pos);
     __syncthreads();
-    x(pos.y) += -k3 + (k1 + 2 * k2 + 2 * k3 + k4) / 6.0;
+    x(pos) += -k3 + (k1 + 2 * k2 + 2 * k3 + k4) / 6.0;
 }
 /* 
 __global__ void print(State<double> x)
@@ -59,6 +61,6 @@ void rungeKutta4Stepper(State<double> &x, double t, double dt)
     assert(threadsPerBlock.x * threadsPerBlock.y * threadsPerBlock.z <= BLOCK_SIZE * BLOCK_SIZE);
     int numBlocks = (x.GetSize() + threadsPerBlock.x * threadsPerBlock.y - 1) / (threadsPerBlock.x * threadsPerBlock.y);
     assert(numBlocks * BLOCK_SIZE * BLOCK_SIZE > x.GetSize());
-    rungeKutta4StepperDev<<<numBlocks, threadsPerBlock>>>(x, t, dt);
+    rungeKutta4StepperDev<<<numBlocks, threadsPerBlock>>>(*x._device, t, dt);
     gpuErrchk(cudaDeviceSynchronize());
 }

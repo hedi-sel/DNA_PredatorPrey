@@ -13,9 +13,11 @@ using boost::timer::cpu_timer;
 
 const size_t nSpecies = 2, sampleSize = (size_t)(xLength / dh);
 State<double> x(nSpecies, sampleSize, 1, true);
+State<double>* x_dev;
 
 void initialization()
 {
+    //x_dev = cudaMalloc(&x_dev
     int centerRabb = centerRabbRaw / dh;
     int widthRabb = widthRabbRaw / dh;
     int centerPred = centerPredRaw / dh;

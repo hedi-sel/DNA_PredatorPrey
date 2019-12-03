@@ -124,5 +124,5 @@ void Iterator_system::Print(double t)
 }
 
 Iterator_system::~Iterator_system(){
-    gpuErrchk(cudaFree(state.data));
+    gpuErrchk(cudaFree(state.GetRawData()));
 };

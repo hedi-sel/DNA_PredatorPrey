@@ -2,7 +2,7 @@
 #include <utilitary/functions.h>
 #include <stdio.h>
 
-__device__ double devLaplacien(const double *position)
+__device__ double devLaplacien(const double *position, const State<double> &x)
 {
     return (-2 * position[0] + position[1] + position[-1]) / (dh * dh);
 }

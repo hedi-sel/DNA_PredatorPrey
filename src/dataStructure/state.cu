@@ -6,11 +6,15 @@
 template <typename T>
 __host__ State<T>::State(const int nSp, const int samSizX, const int samSizY, bool isDevice, T *sourceData)
     : nSpecies(nSp), sampleSizeX(samSizX), sampleSizeY(samSizY),
-      subSampleSizeX(samSizX), subSampleSizeY(samSizY), isDeviceData(isDevice), data(data)
+      isDeviceData(isDevice), data(data)
 {
     if (data == nullptr)
     {
         MemAlloc();
+    }
+    else
+    {
+        printf("wtf you doin here ");
     }
 }
 
@@ -25,19 +29,19 @@ __host__ void State<T>::MemAlloc()
     {
         data = new T[GetSize()];
     }
+    gpuErrchk(cudaMalloc(&_device, sizeof(State<T>)));
+    gpuErrchk(cudaMemcpy(_device, this, sizeof(State<T>), cudaMemcpyHostToDevice));
 }
 
 template <typename T>
 __device__ __host__ State<T>::State(State<T> &state, bool copyToOther)
     : nSpecies(state.nSpecies), sampleSizeX(state.sampleSizeX), sampleSizeY(state.sampleSizeY), isDeviceData((copyToOther) ? !state.isDeviceData : state.isDeviceData),
-      data((copyToOther) ? nullptr : state.data), subSampleSizeX(state.subSampleSizeX), subSampleSizeY(state.subSampleSizeY)
+      data((copyToOther) ? nullptr : state.data)
 {
 #ifdef __CUDA_ARCH__
-
 #else
     if (copyToOther)
     {
-        printf("should not be here 3\n");
         MemAlloc();
         if (state.isDeviceData)
         {
@@ -84,7 +88,7 @@ __device__ __host__ T &State<T>::operator()(int p)
     if (p < 0 || p >= GetSize())
     {
         printf("Invalid raw position: %i\n", p);
-        tdefVal;
+        return tdefVal;
     }
     return data[p];
 }
