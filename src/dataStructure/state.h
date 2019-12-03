@@ -5,11 +5,6 @@ class State
     // Data structure that captures the state of the system
     // Can handle 1D and 2D
 private:
-    T tdefVal;
-
-    // const double dx;
-    // const double dt;
-
     __host__ void MemAlloc();
     T *data;
 
@@ -28,18 +23,30 @@ public:
     // Usable inside the device for device <-> device copies
     __device__ __host__ State(State<T> &state, bool = false);
 
-    // 2D element reader
-    __device__ __host__ T &operator()(int, int, int);
+    // Element Readers
+    __device__ __host__ T &operator()(int, int, int = 0);
     __device__ __host__ T &operator()(dim3);
-    // 1D element reader
-    __device__ __host__ T &operator()(int, int);
-    //Universal Rawdata reader
+    // Raw data reader (unsafe)
     __device__ __host__ T &operator()(int);
+    // A safer element reader that checks boundaries
+    __device__ __host__ T &GetElementSafe(int, int, int = 0);
+    // Very unsafe use! Get the element next to the given pointer
+    __device__ __host__ const T &operator()(const T *, int, int = 0) const;
+
+    //Checks if the given position is within boundaries of the dataset
+    __device__ __host__ bool WithinBoundaries(int, int);
+    __device__ __host__ bool WithinBoundaries(int);
+    //Checks if the given position is outside but adjascent to the dataset
+    __device__ __host__ bool OnEdge(int, int = 0);
 
     //Get data array
     __device__ __host__ T *GetRawData();
 
+    //Get size of the data array
     __device__ __host__ int GetSize();
+
+    //return true if the state is a 2D one
+    __device__ __host__ bool Is2D();
 
     //Destructor
     __device__ __host__ ~State();

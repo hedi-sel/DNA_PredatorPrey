@@ -31,17 +31,14 @@ void CpuGpuCompare()
 {
     std::cout << "Setup done, starting computation" << std::endl;
 
-    cpu_timer timer;
-    double run_time = static_cast<double>(timer.elapsed().wall) * 1.0e-9;
-
     cpu_timer timer_gpu;
+
     Iterator_system iterator(x, t0, printPeriod);
     iterator.Iterate(dt, tmax);
+
     double run_time_gpu = static_cast<double>(timer_gpu.elapsed().wall) * 1.0e-9;
 
-    std::cout << "Ended computation in: " << std::endl;
-    std::cout << " -Cpu Computation: " << run_time << "s" << std::endl;
-    std::cout << " -GPU Computation: " << run_time_gpu << "s" << std::endl;
+    std::cout << "Ended computation in: " << run_time_gpu << "s" << std::endl;
 
     std::cout << "Results saved in : \n"
               << iterator.outputPath << std::endl;

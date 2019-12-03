@@ -61,35 +61,41 @@ __device__ __host__ State<T>::State(State<T> &state, bool copyToOther)
 template <typename T>
 __device__ __host__ T &State<T>::operator()(int s, int x, int y)
 {
-    if (s < 0 || s > nSpecies)
-    {
-        printf("Invalid species: %i\n", s);
-        return tdefVal;
-    }
-    if (x == -1 || x == sampleSizeX || y == sampleSizeY || y == -1)
-        return tdefVal;
-    if (x < -1 || x > sampleSizeX || y > sampleSizeY || y < -1)
-    {
-        printf("Invalid position: %i %i\n", x, y);
-        return tdefVal;
-    }
     return data[s * sampleSizeX * sampleSizeY + x * sampleSizeY + y];
 }
 
 template <typename T>
-__device__ __host__ T &State<T>::operator()(int s, int x)
+__device__ __host__ T &State<T>::GetElementSafe(int s, int x, int y)
 {
-    return this->operator()(s, x, 0);
+    if (s < 0 || s > nSpecies)
+    {
+        printf("Invalid species: %i\n", s);
+        return data[0];
+    }
+    if (OnEdge(x, y))
+    {
+        if (x == -1)
+            return operator()(s, 0, y);
+        if (x == sampleSizeX)
+            return operator()(s, x - 1, y);
+        if (y == sampleSizeY)
+            return operator()(s, x, y - 1);
+        if (y == -1)
+            return operator()(s, x, 0);
+        else
+            printf("Error: The programmer is a moron\n");
+    }
+    if (!WithinBoundaries(x, y))
+    {
+        printf("Invalid position: %i %i\n", x, y);
+        return data[0];
+    }
+    return operator()(s, x, y);
 }
 
 template <typename T>
 __device__ __host__ T &State<T>::operator()(int p)
 {
-    if (p < 0 || p >= GetSize())
-    {
-        printf("Invalid raw position: %i\n", p);
-        return tdefVal;
-    }
     return data[p];
 }
 
@@ -97,6 +103,29 @@ template <typename T>
 __device__ __host__ T &State<T>::operator()(dim3 position)
 {
     return this->operator()(position.x, position.y, position.z);
+}
+
+template <typename T>
+__device__ __host__ const T &State<T>::operator()(const T *el, int x, int y) const
+{
+    return (el)[x * sampleSizeY + y];
+}
+
+template <typename T>
+__device__ __host__ bool State<T>::WithinBoundaries(int x, int y)
+{
+    return !(x < 0 || x >= sampleSizeX || y < 0 || y >= sampleSizeY);
+}
+template <typename T>
+__device__ __host__ bool State<T>::WithinBoundaries(int x)
+{
+    return !(x < 0 || x >= sampleSizeX);
+}
+
+template <typename T>
+__device__ __host__ bool State<T>::OnEdge(int x, int y)
+{
+    return (x == -1 || x == sampleSizeX || y == -1 || y == sampleSizeY);
 }
 
 template <typename T>
@@ -116,7 +145,7 @@ __device__ __host__ State<T>::~State()
 {
     if (isDeviceData)
     {
-        //        gpuErrchk(cudaFree(data));
+        // gpuErrchk(cudaFree(data));
     }
     else
         delete[] data;

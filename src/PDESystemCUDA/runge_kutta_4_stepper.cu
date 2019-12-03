@@ -5,7 +5,6 @@
 
 __device__ dim3 position()
 {
-    //TODO make this better
     return dim3(threadIdx.z, threadIdx.x + threadIdx.y * blockDim.x + blockIdx.x * blockDim.x * blockDim.y, 0);
 }
 
@@ -13,7 +12,6 @@ __device__ double differentiate(State<double> &x, double t, dim3 pos)
 {
     if ((pos.y + 1) % x.sampleSizeX > 1)
     {
-        //printf("%f ",x(pos));
         return (pos.x == 0) ? devPreyFunction(x(pos), x(pos.x + 1, pos.y, pos.z), devLaplacien(&x(pos), x))
                             : devPredatorFunction(x(pos.x - 1, pos.y, pos.z), x(pos), devLaplacien(&x(pos), x));
     }
@@ -21,14 +19,12 @@ __device__ double differentiate(State<double> &x, double t, dim3 pos)
         return 0;
 }
 
-__global__ void rungeKutta4StepperDev(State<double>& x, double t, double dt)
+__global__ void rungeKutta4StepperDev(State<double> &x, double t, double dt)
 {
     dim3 pos = position();
-    //dim3 pos(pos);
-    //printf("%f ", x_dev(pos)); 
-    
-     if (pos.y >= x.sampleSizeX) return;
-     
+    if (!x.WithinBoundaries(pos.y))
+        return;
+
     double k1 = dt * differentiate(x, t, pos);
     __syncthreads();
     x(pos) += k1 / 2.0;
