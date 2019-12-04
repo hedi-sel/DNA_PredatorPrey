@@ -1,5 +1,29 @@
-#include <dataStructure/state.h>
+#pragma once
 
-__device__ double devLaplacien(const double *, const State<double> &);
-__device__ double devPreyFunction(const double, const double, const double d2n);
-__device__ double devPredatorFunction(const double n, const double p, const double d2p);
+#include <dataStructure/state.h>
+#include <constants.hpp>
+#include <stdio.h>
+
+__device__ inline T devLaplacien(const T *pos, const State<T> &x)
+{
+    return (-2 * pos[0] + x(pos, 1) + x(pos, -1)) / (dx * dx);
+}
+
+__device__ inline T devPreyFunction(const T n, const T p, const T d2n)
+{
+    return g * n * (1 - B * g * n) - p * n - l * delta * n / (1 + p) + dn * d2n;
+}
+__device__ inline T devPredatorFunction(const T n, const T p, const T d2p)
+{
+    return n * p - delta * p / (1 + p) + dp * d2p;
+}
+/*
+    T preyFunctionTaylored(T n, T p, T d2n) const
+    {
+        return g * n * (1 - n / K) - (1 - delta * l) * p * n + d2n;
+    }
+    T predatorFunctionTaylored(T n, T p, T d2p) const
+    {
+        return n * p - delta * p + d * d2p;
+    }
+ */

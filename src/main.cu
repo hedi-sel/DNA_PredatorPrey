@@ -7,23 +7,20 @@
 #include "constants.hpp"
 #include "PDESystemCUDA/iterator_system.hpp"
 #include "utilitary/initialConditionsBuilder.hpp"
-#include "utilitary/functions.h"
 
 using boost::timer::cpu_timer;
 
-const size_t nSpecies = 2, sampleSize = (size_t)(xLength / dh);
-State<double> x(nSpecies, sampleSize, 1, true);
-State<double>* x_dev;
+State<T> x(nSpecies, sampleSizeX, sampleSizeY, true);
+State<T> *x_dev;
 
 void initialization()
 {
-    //x_dev = cudaMalloc(&x_dev
-    int centerRabb = centerRabbRaw / dh;
-    int widthRabb = widthRabbRaw / dh;
-    int centerPred = centerPredRaw / dh;
-    int widthPred = widthPredRaw / dh;
-    gaussianMaker(x, 0, sampleSize, maxRabb, centerRabb, widthRabb);
-    gaussianMaker(x, 1, sampleSize, maxPred, centerPred, widthPred);
+    int centerRabb = centerRabbRaw / dx;
+    int widthRabb = widthRabbRaw / dx;
+    int centerPred = centerPredRaw / dx;
+    int widthPred = widthPredRaw / dx;
+    gaussianMaker(x, 0, sampleSizeX, sampleSizeY, maxRabb, centerRabb, widthRabb);
+    gaussianMaker(x, 1, sampleSizeX, sampleSizeY, maxPred, centerPred, widthPred);
 }
 
 //Will run the program twice (once for CPU, once for GPU) and output the runtime for each
@@ -36,7 +33,7 @@ void CpuGpuCompare()
     Iterator_system iterator(x, t0, printPeriod);
     iterator.Iterate(dt, tmax);
 
-    double run_time_gpu = static_cast<double>(timer_gpu.elapsed().wall) * 1.0e-9;
+    T run_time_gpu = static_cast<T>(timer_gpu.elapsed().wall) * 1.0e-9;
 
     std::cout << "Ended computation in: " << run_time_gpu << "s" << std::endl;
 
@@ -59,7 +56,7 @@ void PerformanceOriented(char arg)
         iterator.Iterate(dt, tmax);
         dataName = iterator.dataName;
     }
-    double run_time = static_cast<double>(timer.elapsed().wall) * 1.0e-9;
+    T run_time = static_cast<T>(timer.elapsed().wall) * 1.0e-9;
     std::cout /* << " -Computation Time: " */ << run_time << /* "s" <<  */ std::endl;
 
     std::ostringstream stream;

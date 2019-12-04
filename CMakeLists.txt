@@ -25,8 +25,7 @@ include_directories("${CMAKE_SOURCE_DIR}")
 include_directories(${BOOST_ROOT})
 link_directories(${LD_LIBRARY_PATH})
 
-file(GLOB sources ${SRC}/main.cu ${SRC}/PDESystemCUDA/iterator_system.cu 
-                ${SRC}/utilitary/functions.cu ${SRC}/dataStructure/state.cu)
+file(GLOB_RECURSE sources ${SRC}/*.cu)
 add_executable(predatorPrey ${sources})
 target_link_libraries(predatorPrey boost_timer)
 target_link_libraries(predatorPrey boost_chrono)

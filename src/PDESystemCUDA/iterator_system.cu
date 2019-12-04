@@ -6,14 +6,13 @@
 #include <stdio.h>
 #include <assert.h>
 
-#include "runge_kutta_4_stepper.hpp"
 #include "iterator_system.hpp"
+#include "runge_kutta_4_stepper.h"
 #include <constants.hpp>
 #include <utilitary/functions.h>
-#include "runge_kutta_4_stepper.cu"
 #include <utilitary/cudaErrorCheck.h>
 
-Iterator_system::Iterator_system(State<double> &h_state, double t0, double print)
+Iterator_system::Iterator_system(State<T> &h_state, T t0, T print)
     : state(h_state)
 {
     this->doPrint = print > 0;
@@ -24,7 +23,7 @@ Iterator_system::Iterator_system(State<double> &h_state, double t0, double print
     this->stepper = rungeKutta4Stepper;
 
     std::ostringstream stream;
-    stream << "x=" << xLength / 1000.0 << "mm_dh=" << dh << "µm_t=" << tmax << "s_dt=" << dt * 1000.0 << "ms";
+    stream << "x=" << xLength / 1000.0 << "mm_dh=" << dx << "µm_t=" << tmax << "s_dt=" << dt * 1000.0 << "ms";
     dataName = stream.str();
 
     if (doPrint)
@@ -35,7 +34,7 @@ Iterator_system::Iterator_system(State<double> &h_state, double t0, double print
     }
 }
 
-void Iterator_system::Iterate(double dt)
+void Iterator_system::Iterate(T dt)
 {
     t += dt;
     dim3 threadsPerBlock(BLOCK_SIZE, BLOCK_SIZE);
@@ -50,11 +49,11 @@ void Iterator_system::Iterate(double dt)
     }
 }
 
-void Iterator_system::Iterate(double dt, double tmax)
+void Iterator_system::Iterate(T dt, T tmax)
 {
     bool printendl = false;
     int n_points = 50;
-    auto printProgress = [n_points, &printendl](double start, double end, double current) {
+    auto printProgress = [n_points, &printendl](T start, T end, T current) {
         int current_point = (int)((n_points + 1) * (current - start) / (end - start));
         std::cout << "\r [";
         for (int i = 0; i < n_points; i++)
@@ -68,7 +67,7 @@ void Iterator_system::Iterate(double dt, double tmax)
         printendl = true;
     };
 
-    double start = this->t;
+    T start = this->t;
     int printPeriod = (int)(tmax - start) / (dt * n_points);
     int timeSinceLastPrint = 0;
     while (this->t < tmax - dt / 2.0)
@@ -85,7 +84,7 @@ void Iterator_system::Iterate(double dt, double tmax)
         std::cout << std::endl;
 }
 
-void Iterator_system::Iterate(double dt, int n_steps)
+void Iterator_system::Iterate(T dt, int n_steps)
 {
     Iterate(dt, t + dt * n_steps);
 }
@@ -106,23 +105,25 @@ void Iterator_system::Print()
     }
 }
 
-void Iterator_system::Print(double t)
+void Iterator_system::Print(T t)
 {
-    double *xHost = new double[state.GetSize()];
-    gpuErrchk(cudaMemcpy(xHost, state.GetRawData(), state.GetSize() * sizeof(double), cudaMemcpyDeviceToHost));
+    State<T> xHost(state, true);
     std::ostringstream stream;
     stream << outputPath << "/state_at_t=" << t << "s.dat";
     std::ofstream fout(stream.str());
-    fout << state.nSpecies << "\t" << state.sampleSizeX << "\n";
+    fout << state.nSpecies << "\t" << state.sampleSizeX;
+    if (state.sampleSizeY > 1)
+        fout << "\t" << state.sampleSizeY;
+    fout << "\n";
     for (size_t i = 0; i < state.nSpecies; ++i)
     {
         for (size_t j = 0; j < state.sampleSizeX; ++j)
         {
-            fout << i << "\t" << j << "\t" << xHost[i * state.sampleSizeX + j] << "\n";
+            fout << i << "\t" << j << "\t" << xHost(i, j) << "\n";
         }
     }
 }
 
 Iterator_system::~Iterator_system(){
-    gpuErrchk(cudaFree(state.GetRawData()));
+    //gpuErrchk(cudaFree(state.GetRawData()));
 };

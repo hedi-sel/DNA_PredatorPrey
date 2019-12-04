@@ -1,7 +1,9 @@
-#include "state.h"
 #include <stdio.h>
 #include <assert.h>
+
 #include "utilitary/cudaErrorCheck.h"
+#include "state.h"
+#include <constants.hpp>
 
 template <typename T>
 __host__ State<T>::State(const int nSp, const int samSizX, const int samSizY, bool isDevice, T *sourceData)
@@ -43,7 +45,7 @@ __device__ __host__ State<T>::State(State<T> &state, bool copyToOther)
     if (copyToOther)
     {
         MemAlloc();
-        if (state.isDeviceData)
+        if (isDeviceData)
         {
             gpuErrchk(cudaMemcpy(data, state.GetRawData(), GetSize() * sizeof(T),
                                  cudaMemcpyHostToDevice));
@@ -141,15 +143,35 @@ __device__ __host__ int State<T>::GetSize()
 }
 
 template <typename T>
-__device__ __host__ State<T>::~State()
+__device__ __host__ bool State<T>::Is2D()
+{
+    return sampleSizeY > 1 && sampleSizeX > 1;
+}
+
+template <typename T>
+__device__ __host__ dim3 State<T>::GetThreadDim()
+{
+    return dim3(BLOCK_SIZE / nSpecies, BLOCK_SIZE, nSpecies);
+}
+
+template <typename T>
+__device__ __host__ dim3 State<T>::GetBlockDim()
+{
+    dim3 thread = GetThreadDim();
+    int blockSize = thread.x * thread.y * thread.z;
+    return dim3((GetSize() + blockSize - 1) / blockSize,1,1);
+}
+
+template <typename T>
+__host__ State<T>::~State()
 {
     if (isDeviceData)
     {
-        // gpuErrchk(cudaFree(data));
+        gpuErrchk(cudaFree(data));
     }
     else
         delete[] data;
 }
 
-template class State<double>;
-template class State<float>;
+template class State<T>;
+// template class State<float>;

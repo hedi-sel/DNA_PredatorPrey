@@ -48,6 +48,10 @@ public:
     //return true if the state is a 2D one
     __device__ __host__ bool Is2D();
 
+    //Kernel running Helper
+    __device__ __host__ dim3 GetThreadDim();
+    __device__ __host__ dim3 GetBlockDim();
+
     //Destructor
-    __device__ __host__ ~State();
+    __host__ ~State();
 };
