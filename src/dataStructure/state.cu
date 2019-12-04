@@ -6,6 +6,10 @@
 #include <constants.hpp>
 
 template <typename T>
+__host__ State<T>::State(const int nSp, const dim2 samSize, bool isDevice, T *sourceData)
+    : State<T>(nSp, samSize.x, samSize.y, isDevice, sourceData){};
+
+template <typename T>
 __host__ State<T>::State(const int nSp, const int samSizX, const int samSizY, bool isDevice, T *sourceData)
     : nSpecies(nSp), sampleSizeX(samSizX), sampleSizeY(samSizY),
       isDeviceData(isDevice), data(data)
@@ -159,7 +163,7 @@ __device__ __host__ dim3 State<T>::GetBlockDim()
 {
     dim3 thread = GetThreadDim();
     int blockSize = thread.x * thread.y * thread.z;
-    return dim3((GetSize() + blockSize - 1) / blockSize,1,1);
+    return dim3((GetSize() + blockSize - 1) / blockSize, 1, 1);
 }
 
 template <typename T>
@@ -174,4 +178,3 @@ __host__ State<T>::~State()
 }
 
 template class State<T>;
-// template class State<float>;

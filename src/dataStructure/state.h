@@ -1,4 +1,7 @@
 #pragma once
+
+#include "dim2.h"
+
 template <typename T>
 class State
 {
@@ -18,6 +21,7 @@ public:
     State<T> *_device;
 
     // Constructor, set bool = true to create data in device memory
+    __host__ State(int, dim2, bool = false, T *data = nullptr);
     __host__ State(int, int, int = 1, bool = false, T *data = nullptr);
     // Copy constructor, set bool = true in case you're copying data host <-> device
     // Usable inside the device for device <-> device copies

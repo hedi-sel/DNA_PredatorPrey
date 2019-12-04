@@ -10,17 +10,13 @@
 
 using boost::timer::cpu_timer;
 
-State<T> x(nSpecies, sampleSizeX, sampleSizeY, true);
+State<T> x(nSpecies, sampleSize, true);
 State<T> *x_dev;
 
 void initialization()
 {
-    int centerRabb = centerRabbRaw / dx;
-    int widthRabb = widthRabbRaw / dx;
-    int centerPred = centerPredRaw / dx;
-    int widthPred = widthPredRaw / dx;
-    gaussianMaker(x, 0, sampleSizeX, sampleSizeY, maxRabb, centerRabb, widthRabb);
-    gaussianMaker(x, 1, sampleSizeX, sampleSizeY, maxPred, centerPred, widthPred);
+    gaussianMaker(x, 0, sampleSize, maxRabb, centerRabb, widthRabb);
+    gaussianMaker(x, 1, sampleSize, maxPred, centerPred, widthPred);
 }
 
 //Will run the program twice (once for CPU, once for GPU) and output the runtime for each

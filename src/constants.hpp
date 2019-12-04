@@ -1,5 +1,6 @@
 #include <string>
 #include <dataStructure/dim3T.h>
+#include <dataStructure/dim2.h>
 
 #pragma once
 
@@ -7,6 +8,7 @@ const int BLOCK_SIZE = 32;
 
 // double or float?
 typedef double T;
+template struct dim<T>;
 
 const T k1 = 0.003;
 const T k2 = 0.004;
@@ -46,19 +48,24 @@ const T dy = 0;            //µm
 
 // Initial values
 //
-const T centerRabbRaw = 5000;
+const dim<T> centerRabbRaw(5000, 2000);
 const T widthRabbRaw = 10000;
 const T maxRabb = 1;
 
-const T centerPredRaw = 2000;
+const dim<T> centerPredRaw(2000, 2000);
 const T widthPredRaw = 4000;
 const T maxPred = 2;
 
 const std::string CpuOutputPath = "./outputTemoin";
 const std::string GpuOutputPath = "./output";
 
-// Consequence
+// Usefull Variables
 //
 const bool is2D = dy != 0 && yLength != 0;
-const int sampleSizeX = (xLength / dx);
-const int sampleSizeY = (is2D) ? (yLength / dy) : 1;
+const dim2 sampleSize((xLength / dx),
+                      (is2D) ? (yLength / dy) : 1);
+// Discriete version of initial conditions
+const dim2 centerRabb(centerRabbRaw.x / dx, (is2D) ? centerRabbRaw.y / dy : 1);
+const int widthRabb = widthRabbRaw / dx;
+const dim2 centerPred(centerPredRaw.x / dx, (is2D) ? centerPredRaw.y / dy : 1);
+const int widthPred = widthPredRaw / dx;
