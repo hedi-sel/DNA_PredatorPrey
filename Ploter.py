@@ -74,17 +74,11 @@ def plotAndPrintData(fileName):
         plt.grid(False)
         plt.ylim((0, 4))
     elif (len(shape) == 3):
+        Z = Z / (Z.max(axis = 0).max(axis=0) + np.spacing(0))
         plt.imshow(Z)
     else:
         print("Shape not supported")
         return
-
-        """ 
-        print("Warning, 3D is not yet supported")
-        X = np.outer(np.linspace(0, shape[1]-1, shape[1]), np.ones(shape[2]))
-        Y = np.outer(np.ones(shape[1]), np.linspace(0, shape[2]-1, shape[2]))
-        ax = plt.figure().add_subplot(111, projection='3d')
-        ax.plot_surface(X, Y, Z) """
 
     plt.savefig(printLocation+"/"+fileName.replace(".dat", ".png"))
     plt.close()
