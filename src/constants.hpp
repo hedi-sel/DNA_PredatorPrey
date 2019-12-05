@@ -36,13 +36,8 @@ const int nSpecies = 2;
 // METADATA
 //
 const T t0 = 0.0;
-<<<<<<< HEAD
-const T tmax = 10;   //s
-const T dt = 1.0e-1; //s
-=======
 const T tmax = 100;   //s
 const T dt = 1.0e0; //s
->>>>>>> 323acd03d99b1fabbced87e66365c91768633e3d
 
 const T printPeriod = 1;
 
