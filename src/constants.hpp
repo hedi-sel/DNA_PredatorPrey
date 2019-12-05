@@ -43,10 +43,10 @@ const T printPeriod = 1;
 
 constexpr T xLength = 1.0e4;   //µm
 constexpr T yLength = xLength; //µm
-constexpr T dx = 10;            //µm
-#define DY 10
-#define is2D (DY != 0)
-constexpr T dy = DY; //µm
+#define DH 10
+constexpr T dx = DH; //µm
+constexpr T dy = DH; //µm
+#define is2D (DH != 0)
 // Initial values
 //
 const dim<T> centerRabbRaw(5000, 2000);
