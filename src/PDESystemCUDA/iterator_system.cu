@@ -23,6 +23,8 @@ Iterator_system::Iterator_system(State<T> &h_state, T t0, T print)
     this->stepper = rungeKutta4Stepper;
 
     std::ostringstream stream;
+    if (is2D)
+        stream << "2D_";
     stream << "x=" << xLength / 1000.0 << "mm_dh=" << dx << "µm_t=" << tmax << "s_dt=" << dt * 1000.0 << "ms";
     dataName = stream.str();
 
@@ -111,15 +113,22 @@ void Iterator_system::Print(T t)
     std::ostringstream stream;
     stream << outputPath << "/state_at_t=" << t << "s.dat";
     std::ofstream fout(stream.str());
-    fout << state.nSpecies << "\t" << state.sampleSizeX;
+    fout << state.sampleSizeX;
     if (state.sampleSizeY > 1)
         fout << "\t" << state.sampleSizeY;
-    fout << "\n";
+    fout << "\t" << state.nSpecies << "\n";
     for (size_t i = 0; i < state.nSpecies; ++i)
     {
         for (size_t j = 0; j < state.sampleSizeX; ++j)
         {
-            fout << i << "\t" << j << "\t" << xHost(i, j) << "\n";
+#if is2D
+            for (size_t k = 0; k < state.sampleSizeY; ++k)
+            {
+                fout << j << "\t" << k << "\t" << i << "\t" << xHost(i, j, k) << "\n";
+            }
+#else
+            fout << j << "\t" << i << "\t" << xHost(i, j) << "\n";
+#endif
         }
     }
 }

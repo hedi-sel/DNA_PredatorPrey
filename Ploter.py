@@ -44,16 +44,17 @@ def plotAndPrintData(fileName):
     lines = f.readlines()
 
     """
-    Expected format for the file is
+    Expected format for the file is:
+    _________
     shape (ex: 2 1024)
     0	0	val
     ..
     i	j	val
     ..
+    _________
     """
-
     shape = tuple(readLine(lines.pop(0))[0])
-    Z = np.zeros(shape)
+    Z = np.zeros((100,100,3))
     for line in lines:
         values, nan, inf = readLine(line)
         nanCount += nan
@@ -72,14 +73,17 @@ def plotAndPrintData(fileName):
         plt.grid(False)
         plt.ylim((0, 4))
     elif (len(shape) == 3):
+        plt.imshow(Z)
+    else:
+        print("Shape not supported")
+        return
+
+        """ 
         print("Warning, 3D is not yet supported")
         X = np.outer(np.linspace(0, shape[1]-1, shape[1]), np.ones(shape[2]))
         Y = np.outer(np.ones(shape[1]), np.linspace(0, shape[2]-1, shape[2]))
         ax = plt.figure().add_subplot(111, projection='3d')
-        ax.plot_surface(X, Y, Z)
-
-    else:
-        return
+        ax.plot_surface(X, Y, Z) """
 
     plt.savefig(printLocation+"/"+fileName.replace(".dat", ".png"))
     plt.close()

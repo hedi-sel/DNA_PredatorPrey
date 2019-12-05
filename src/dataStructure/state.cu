@@ -162,8 +162,14 @@ template <typename T>
 __device__ __host__ dim3 State<T>::GetBlockDim()
 {
     dim3 thread = GetThreadDim();
-    int blockSize = thread.x * thread.y * thread.z;
-    return dim3((GetSize() + blockSize - 1) / blockSize, 1, 1);
+    if (is2D)
+    {
+        return dim3((sampleSizeX - 1) / thread.x + 1, (sampleSizeY - 1) / thread.y + 1, 1);
+    }
+    else
+    {
+        return dim3((GetSize() - 1) / thread.x * thread.y * thread.z + 1, 1, 1);
+    }
 }
 
 template <typename T>

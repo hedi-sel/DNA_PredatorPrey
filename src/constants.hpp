@@ -41,11 +41,12 @@ const T dt = 1.0e-3; //s
 
 const T printPeriod = 1;
 
-const T xLength = 1.0e4;   //µm
-const T yLength = xLength; //µm
-const T dx = 1;          //µm
-const T dy = 0;            //µm
-
+constexpr T xLength = 1.0e2;   //µm
+constexpr T yLength = xLength; //µm
+constexpr T dx = 1;            //µm
+#define DY 1
+#define is2D (DY != 0)
+constexpr T dy = DY; //µm
 // Initial values
 //
 const dim<T> centerRabbRaw(5000, 2000);
@@ -61,7 +62,7 @@ const std::string GpuOutputPath = "./output";
 
 // Usefull Variables
 //
-const bool is2D = dy != 0 && yLength != 0;
+
 const dim2 sampleSize((xLength / dx),
                       (is2D) ? (yLength / dy) : 1);
 // Discriete version of initial conditions

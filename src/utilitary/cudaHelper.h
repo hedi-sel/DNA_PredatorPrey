@@ -1,11 +1,10 @@
 #pragma once
-
 #include <constants.hpp>
 
 #if is2D
 __device__ inline dim3 position()
 {
-    return dim3(threadIdx.z, threadIdx.x + blockDim.x * blockIdx.x, threadIdx.y + blockDim.y * BlockIdx.y);
+    return dim3(threadIdx.z, threadIdx.x + blockDim.x * blockIdx.x, threadIdx.y + blockDim.y * blockIdx.y);
 }
 #else
 __device__ inline dim3 position()

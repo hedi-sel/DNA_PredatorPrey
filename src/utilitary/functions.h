@@ -6,7 +6,12 @@
 
 __device__ inline T devLaplacien(const T *pos, const State<T> &x)
 {
+#if is2D
+    return (-2 * pos[0] + x(pos, 1, 0) + x(pos, -1, 0)) / (dx * dx) +
+           (-2 * pos[0] + x(pos, 0, 1) + x(pos, 0, -1)) / (dy * dy);
+#else
     return (-2 * pos[0] + x(pos, 1) + x(pos, -1)) / (dx * dx);
+#endif
 }
 
 __device__ inline T devPreyFunction(const T n, const T p, const T d2n)
