@@ -37,11 +37,11 @@ const int nSpecies = 2;
 //
 const T t0 = 0.0;
 const T tmax = 10;   //s
-const T dt = 1.0e-3; //s
+const T dt = 1.0e-1; //s
 
 const T printPeriod = 1;
 
-constexpr T xLength = 1.0e2;   //µm
+constexpr T xLength = 1.0e4;   //µm
 constexpr T yLength = xLength; //µm
 constexpr T dx = 1;            //µm
 #define DY 1

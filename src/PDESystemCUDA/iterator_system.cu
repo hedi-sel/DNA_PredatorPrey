@@ -51,24 +51,22 @@ void Iterator_system::Iterate(T dt)
     }
 }
 
+const int n_points = 50;
+auto printProgress = [](T start, T end, T current) {
+    int current_point = (int)((n_points + 1) * (current - start) / (end - start));
+    std::cout << "\r [";
+    for (int i = 0; i < n_points; i++)
+    {
+        if (i <= current_point)
+            std::cout << "#";
+        else
+            std::cout << ".";
+    };
+    std::cout << "]";
+};
+
 void Iterator_system::Iterate(T dt, T tmax)
 {
-    bool printendl = false;
-    int n_points = 50;
-    auto printProgress = [n_points, &printendl](T start, T end, T current) {
-        int current_point = (int)((n_points + 1) * (current - start) / (end - start));
-        std::cout << "\r [";
-        for (int i = 0; i < n_points; i++)
-        {
-            if (i <= current_point)
-                std::cout << "#";
-            else
-                std::cout << ".";
-        };
-        std::cout << "]";
-        printendl = true;
-    };
-
     T start = this->t;
     int printPeriod = (int)(tmax - start) / (dt * n_points);
     int timeSinceLastPrint = 0;
@@ -82,8 +80,7 @@ void Iterator_system::Iterate(T dt, T tmax)
             printProgress(start, tmax, t);
         };
     };
-    if (printendl)
-        std::cout << std::endl;
+    std::cout << std::endl;
 }
 
 void Iterator_system::Iterate(T dt, int n_steps)
