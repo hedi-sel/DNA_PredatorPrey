@@ -18,7 +18,6 @@ Iterator_system::Iterator_system(State<T> &h_state, T t0, T print)
     this->doPrint = print > 0;
     this->printPeriod = print;
     this->t = t0;
-    //gpuErrchk(this.state = h_state.GetDeviceCopy());
 
     this->stepper = rungeKutta4Stepper;
 
@@ -43,7 +42,6 @@ void Iterator_system::Iterate(T dt)
     int numBlocks = (state.GetSize() - 1) / (threadsPerBlock.x * threadsPerBlock.y) + 1;
     assert(numBlocks * BLOCK_SIZE * BLOCK_SIZE > state.GetSize());
     stepper(state, t, dt);
-    //rungeKutta4Stepper<<<numBlocks, threadsPerBlock>>>(x, dxdt, nSpecies, sampleSize, t, dt);
     if (doPrint && t >= nextPrint - dt / 2.)
     {
         Print(t);
@@ -51,28 +49,26 @@ void Iterator_system::Iterate(T dt)
     }
 }
 
+const int n_points = 200;
+auto printProgress = [](T start, T end, T current) {
+    int current_point = (int)((n_points + 1) * (current - start) / (end - start));
+    std::cout << "\r [";
+    for (int i = 0; i < n_points; i++)
+    {
+        if (i <= current_point)
+            std::cout << "#";
+        else
+            std::cout << ".";
+    };
+    std::cout << "]";
+};
+
 void Iterator_system::Iterate(T dt, T tmax)
 {
-    bool printendl = false;
-    int n_points = 50;
-    auto printProgress = [n_points, &printendl](T start, T end, T current) {
-        int current_point = (int)((n_points + 1) * (current - start) / (end - start));
-        std::cout << "\r [";
-        for (int i = 0; i < n_points; i++)
-        {
-            if (i <= current_point)
-                std::cout << "#";
-            else
-                std::cout << ".";
-        };
-        std::cout << "]";
-        printendl = true;
-    };
-
-    T start = this->t;
+    T start = t;
     int printPeriod = (int)(tmax - start) / (dt * n_points);
     int timeSinceLastPrint = 0;
-    while (this->t < tmax - dt / 2.0)
+    while (t < tmax - dt / 2.0)
     {
         Iterate(dt);
         timeSinceLastPrint++;
@@ -82,8 +78,7 @@ void Iterator_system::Iterate(T dt, T tmax)
             printProgress(start, tmax, t);
         };
     };
-    if (printendl)
-        std::cout << std::endl;
+    std::cout << std::endl;
 }
 
 void Iterator_system::Iterate(T dt, int n_steps)

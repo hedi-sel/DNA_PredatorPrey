@@ -19,7 +19,7 @@ __device__ T differentiate(State<T> &x, T t, dim3 pos, const T& xpos)
 __global__ void rungeKutta4StepperDev(State<T> &x, T t, T dt)
 {
     dim3 pos = position();
-#if is2d
+#if is2D
     if (!x.WithinBoundaries(pos.y, pos.z))
         return;
 #else
