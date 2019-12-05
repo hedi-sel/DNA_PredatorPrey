@@ -53,8 +53,9 @@ def plotAndPrintData(fileName):
     ..
     _________
     """
-    shape = tuple(readLine(lines.pop(0))[0])
-    Z = np.zeros((100,100,3))
+    shape = readLine(lines.pop(0))[0]
+    shape[2] = 3 #because rgb
+    Z = np.zeros(tuple(shape))
     for line in lines:
         values, nan, inf = readLine(line)
         nanCount += nan

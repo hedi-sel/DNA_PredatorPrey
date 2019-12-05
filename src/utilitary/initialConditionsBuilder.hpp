@@ -15,9 +15,9 @@ __global__ void gaussianFunction(State<T> &x, int species, dim2 sampleSize, T ma
 {
     dim3 pos = position();
     pos.x = species;
-    if (x.WithinBoundaries(pos.y))
+    if (x.WithinBoundaries(pos.y, pos.z))
     {
-        x(pos) = max * exp(-(square(T(pos.y) - T(center.x)) + square(T(pos.z) - T(center.y))) / square(width)); //- ((is2D) ? pow(pos.z - center.y, 2) : 0))
+        x(pos) = max * exp(-(square(T(pos.y) - T(center.x)) + square(T(pos.z) - T(center.y))) / square(width));
     }
 }
 

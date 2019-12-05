@@ -36,15 +36,20 @@ const int nSpecies = 2;
 // METADATA
 //
 const T t0 = 0.0;
+<<<<<<< HEAD
 const T tmax = 10;   //s
 const T dt = 1.0e-1; //s
+=======
+const T tmax = 100;   //s
+const T dt = 1.0e0; //s
+>>>>>>> 323acd03d99b1fabbced87e66365c91768633e3d
 
 const T printPeriod = 1;
 
 constexpr T xLength = 1.0e4;   //µm
 constexpr T yLength = xLength; //µm
-constexpr T dx = 1;            //µm
-#define DY 1
+constexpr T dx = 10;            //µm
+#define DY 10
 #define is2D (DY != 0)
 constexpr T dy = DY; //µm
 // Initial values
