@@ -5,12 +5,12 @@
 #include <utilitary/cudaErrorCheck.h>
 #include <utilitary/cudaHelper.h>
 
-__device__ T differentiate(State<T> &x, T t, dim3 pos)
+__device__ T differentiate(State<T> &x, T t, dim3 pos, const T& xpos)
 {
     if ((pos.y + 1) % x.sampleSizeX > 1)
     {
-        return (pos.x == 0) ? devPreyFunction(x(pos), x(pos.x + 1, pos.y, pos.z), devLaplacien(&x(pos), x))
-                            : devPredatorFunction(x(pos.x - 1, pos.y, pos.z), x(pos), devLaplacien(&x(pos), x));
+        return (pos.x == 0) ? devPreyFunction(xpos, x(pos.x + 1, pos.y, pos.z), devLaplacien(&xpos, x))
+                            : devPredatorFunction(x(pos.x - 1, pos.y, pos.z), xpos, devLaplacien(&xpos, x));
     }
     else
         return 0;
@@ -19,24 +19,29 @@ __device__ T differentiate(State<T> &x, T t, dim3 pos)
 __global__ void rungeKutta4StepperDev(State<T> &x, T t, T dt)
 {
     dim3 pos = position();
+#if is2d
+    if (!x.WithinBoundaries(pos.y, pos.z))
+        return;
+#else
     if (!x.WithinBoundaries(pos.y))
         return;
-
-    T k1 = dt * differentiate(x, t, pos);
+#endif
+    T &xpos = x(pos);
+    T k1 = dt * differentiate(x, t, pos, xpos);
     __syncthreads();
-    x(pos) += k1 / 2.0;
+    xpos += k1 / 2.0;
     __syncthreads();
-    T k2 = dt * differentiate(x, t + dt / 2.0, pos);
+    T k2 = dt * differentiate(x, t + dt / 2.0, pos, xpos);
     __syncthreads();
-    x(pos) += (k2 - k1) / 2.0;
+    xpos += (k2 - k1) / 2.0;
     __syncthreads();
-    T k3 = dt * differentiate(x, t + dt / 2.0, pos);
+    T k3 = dt * differentiate(x, t + dt / 2.0, pos, xpos);
     __syncthreads();
-    x(pos) += k3 - k2 / 2.0;
+    xpos += k3 - k2 / 2.0;
     __syncthreads();
-    T k4 = dt * differentiate(x, t + dt, pos);
+    T k4 = dt * differentiate(x, t + dt, pos, xpos);
     __syncthreads();
-    x(pos) += -k3 + (k1 + 2 * k2 + 2 * k3 + k4) / 6.0;
+    xpos += -k3 + (k1 + 2 * k2 + 2 * k3 + k4) / 6.0;
 }
 /* 
 __global__ void print(State<T> x)

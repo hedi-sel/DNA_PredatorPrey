@@ -37,13 +37,13 @@ const int nSpecies = 2;
 //
 const T t0 = 0.0;
 const T tmax = 10;   //s
-const T dt = 1.0e-4; //s
+const T dt = 1.0e-3; //s
 
 const T printPeriod = 1;
 
 const T xLength = 1.0e4;   //µm
 const T yLength = xLength; //µm
-const T dx = 0.1;          //µm
+const T dx = 1;          //µm
 const T dy = 0;            //µm
 
 // Initial values
@@ -65,7 +65,7 @@ const bool is2D = dy != 0 && yLength != 0;
 const dim2 sampleSize((xLength / dx),
                       (is2D) ? (yLength / dy) : 1);
 // Discriete version of initial conditions
-const dim2 centerRabb(centerRabbRaw.x / dx, (is2D) ? centerRabbRaw.y / dy : 1);
+const dim2 centerRabb(centerRabbRaw.x / dx, (is2D) ? centerRabbRaw.y / dy : 0);
 const int widthRabb = widthRabbRaw / dx;
-const dim2 centerPred(centerPredRaw.x / dx, (is2D) ? centerPredRaw.y / dy : 1);
+const dim2 centerPred(centerPredRaw.x / dx, (is2D) ? centerPredRaw.y / dy : 0);
 const int widthPred = widthPredRaw / dx;
