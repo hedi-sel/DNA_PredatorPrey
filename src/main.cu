@@ -7,6 +7,7 @@
 #include "constants.hpp"
 #include "PDESystemCUDA/iterator_system.hpp"
 #include "utilitary/initialConditionsBuilder.hpp"
+#include "utilitary/normalize.hpp"
 
 using boost::timer::cpu_timer;
 
@@ -20,7 +21,7 @@ void initialization()
 }
 
 //Will run the program twice (once for CPU, once for GPU) and output the runtime for each
-void CpuGpuCompare()
+void GpuRun()
 {
     std::cout << "Setup done, starting computation" << std::endl;
 
@@ -33,7 +34,7 @@ void CpuGpuCompare()
 
     std::cout << "Ended computation in: " << run_time_gpu << "s" << std::endl;
 
-    std::cout << "Results saved in : \n"
+    std::cout << "Normalized results saved in : \n"
               << iterator.outputPath << std::endl;
 
     std::ofstream fout("dataName");
@@ -75,7 +76,7 @@ int main(int argc, char **argv)
     }
     else
     {
-        CpuGpuCompare();
+        GpuRun();
     }
 
     return 0;

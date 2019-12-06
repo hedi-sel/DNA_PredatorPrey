@@ -74,7 +74,7 @@ def plotAndPrintData(fileName):
         plt.grid(False)
         plt.ylim((0, 4))
     elif (len(shape) == 3):
-        Z = Z / (Z.max(axis = 0).max(axis=0) + np.spacing(0))
+        #Z = Z / (Z.max(axis = 0).max(axis=0) + np.spacing(0))
         plt.imshow(Z)
     else:
         print("Shape not supported")
