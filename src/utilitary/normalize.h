@@ -23,7 +23,7 @@ __device__ void atomicMax(double *address, double val)
     *address = __longlong_as_double(old);
 }
 #endif
-__global__ void FindMax(State<T> &x, State<T> &localMaxes, T *maxValue)
+__global__ void FindMax(State<T> &x, State<T> &localMaxes)
 {
     dim3 pos = position();
     if (!x.WithinBoundaries(pos.y, pos.z))
@@ -78,7 +78,7 @@ __global__ void Divide(State<T> &x, State<T> &localMaxes)
 void Normalize(State<T> &x)
 {
     State<T> localMaxes(nSpecies, sampleSize, true);
-    FindMax<<<x.GetBlockDim(), x.GetThreadDim()>>>(*x._device, *localMaxes._device, maxValue);
+    FindMax<<<x.GetBlockDim(), x.GetThreadDim()>>>(*x._device, *localMaxes._device);
     gpuErrchk(cudaDeviceSynchronize());
     
     Divide<<<x.GetBlockDim(), x.GetThreadDim()>>>(*x._device, *localMaxes._device);
