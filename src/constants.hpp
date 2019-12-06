@@ -37,24 +37,24 @@ const int nSpecies = 2;
 //
 const T t0 = 0.0;
 const T tmax = 100;   //s
-const T dt = 1.0e0; //s
+const T dt = 1.0e-1; //s
 
 const T printPeriod = 1;
 
 constexpr T xLength = 1.0e4;   //µm
 constexpr T yLength = xLength; //µm
-#define DH 10
+#define DH 1
 constexpr T dx = DH; //µm
 constexpr T dy = DH; //µm
 #define is2D (DH != 0)
 // Initial values
 //
-const dim<T> centerRabbRaw(5000, 2000);
-const T widthRabbRaw = 10000;
+const dim<T> centerRabbRaw(xLength / 2.0, xLength/4.0);
+const T widthRabbRaw = xLength;
 const T maxRabb = 1;
 
-const dim<T> centerPredRaw(2000, 2000);
-const T widthPredRaw = 4000;
+const dim<T> centerPredRaw(xLength / 5.0, xLength/5.0);
+const T widthPredRaw = xLength/2.0;
 const T maxPred = 2;
 
 const std::string CpuOutputPath = "./outputTemoin";
