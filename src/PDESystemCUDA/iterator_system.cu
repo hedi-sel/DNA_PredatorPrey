@@ -11,6 +11,7 @@
 #include <constants.hpp>
 #include <utilitary/functions.h>
 #include <utilitary/cudaErrorCheck.h>
+#include <utilitary/normalize.h>
 
 Iterator_system::Iterator_system(State<T> &h_state, T t0, T print)
     : state(h_state)
@@ -104,7 +105,9 @@ void Iterator_system::Print()
 
 void Iterator_system::Print(T t)
 {
-    State<T> xHost(state, true);
+    State<T> xCopy(state);
+    Normalize(xCopy);
+    State<T> xHost(xCopy, true);
     std::ostringstream stream;
     stream << outputPath << "/state_at_t=" << t << "s.dat";
     std::ofstream fout(stream.str());

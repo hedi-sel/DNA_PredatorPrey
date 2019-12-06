@@ -12,7 +12,7 @@ __host__ State<T>::State(const int nSp, const dim2 samSize, bool isDevice, T *so
 template <typename T>
 __host__ State<T>::State(const int nSp, const int samSizX, const int samSizY, bool isDevice, T *sourceData)
     : nSpecies(nSp), sampleSizeX(samSizX), sampleSizeY(samSizY),
-      isDeviceData(isDevice), data(data)
+      isDeviceData(isDevice), data(sourceData)
 {
     if (data == nullptr)
     {
@@ -46,9 +46,9 @@ __device__ __host__ State<T>::State(State<T> &state, bool copyToOther)
 {
 #ifdef __CUDA_ARCH__
 #else
+    MemAlloc();
     if (copyToOther)
     {
-        MemAlloc();
         if (isDeviceData)
         {
             gpuErrchk(cudaMemcpy(data, state.GetRawData(), GetSize() * sizeof(T),
@@ -58,6 +58,19 @@ __device__ __host__ State<T>::State(State<T> &state, bool copyToOther)
         {
             gpuErrchk(cudaMemcpy(data, state.GetRawData(), GetSize() * sizeof(T),
                                  cudaMemcpyDeviceToHost));
+        }
+    }
+    else
+    {
+        if (isDeviceData)
+        {
+            gpuErrchk(cudaMemcpy(data, state.GetRawData(), GetSize() * sizeof(T),
+                                 cudaMemcpyDeviceToDevice));
+        }
+        else
+        {
+            gpuErrchk(cudaMemcpy(data, state.GetRawData(), GetSize() * sizeof(T),
+                                 cudaMemcpyHostToHost));
         }
     }
 

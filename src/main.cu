@@ -7,7 +7,6 @@
 #include "constants.hpp"
 #include "PDESystemCUDA/iterator_system.hpp"
 #include "utilitary/initialConditionsBuilder.hpp"
-#include "utilitary/normalize.hpp"
 
 using boost::timer::cpu_timer;
 
