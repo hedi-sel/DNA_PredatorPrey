@@ -6,6 +6,7 @@
 
 #include "constants.hpp"
 #include "PDESystemCUDA/iterator_system.hpp"
+#include "PDESystemCUDA/iterator_system.cu"
 #include "utilitary/initialConditionsBuilder.hpp"
 
 using boost::timer::cpu_timer;
@@ -61,7 +62,7 @@ void PerformanceOriented(char arg)
     fout << run_time << std::endl;
 }
 
-int main(int argc, char **argv)
+void launch(int argc, char **argv)
 {
     initialization();
 
@@ -77,6 +78,4 @@ int main(int argc, char **argv)
     {
         GpuRun();
     }
-
-    return 0;
 }

@@ -42,17 +42,17 @@ const int nSpecies = 2;
 // METADATA
 //
 const T t0 = 0.0;
-const T tmax = 10;   //s
-const T dt = 1.0e-3; //s
+const T tmax = 100;    //s
+const T dt = 100.0e-3; //s
 
 const T printPeriod = 1;
 
-constexpr T xLength = 1.0e4;   //µm
+constexpr T xLength = 1.0e2;   //µm
 constexpr T yLength = xLength; //µm
-#define DY 0
-constexpr T dx = 0.1; //µm
-constexpr T dy = DY;  //µm
-#define is2D (DY != 0)
+#define DY 1
+constexpr T dx = 10; //µm
+constexpr T dy = dx; //µm
+#define is2D !(DY == 0)
 // Initial values
 //
 const dim<T> centerRabbRaw(xLength / 2.0, xLength / 4.0);

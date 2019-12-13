@@ -1,3 +1,4 @@
+#pragma once
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -8,6 +9,7 @@
 
 #include "iterator_system.hpp"
 #include "runge_kutta_4_stepper.h"
+#include <dataStructure/state.cu>
 #include <constants.hpp>
 #include <utilitary/functions.h>
 #include <utilitary/cudaErrorCheck.h>

@@ -1,3 +1,5 @@
+cd $(dirname $0)
+
 echo "Do you want to generate a clip? (y)" && read doGif &&
 if [ $doGif = y ];
 then

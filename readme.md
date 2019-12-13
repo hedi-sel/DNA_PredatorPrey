@@ -22,7 +22,8 @@ Building
 
 ```c++
 ./bootstrap.sh
-cmake ./    
+cd build/
+cmake ../   
 make
 ```
 
@@ -31,6 +32,12 @@ Run
 
 ```c++
 run/predatorPrey
+```
+
+Or if you want to directly plot the results:
+
+```c++
+../run.sh
 ```
 
 Plot results

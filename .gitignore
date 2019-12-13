@@ -3,6 +3,7 @@
 .pytest_cache/*
 
 plot/*
+build/**
 run/*
 output/*
 performance/*
