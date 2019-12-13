@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.10)
 find_package(CUDA)
-find_package(PythonLibs 2.7 REQUIRED)
+find_package(PythonLibs REQUIRED)
 
 include_directories(${PYTHON_INCLUDE_DIRS})
 
@@ -14,3 +14,5 @@ cuda_add_library(gpu_library SHARED
 target_link_libraries(gpu_library
   ${PYTHON_LIBRARIES}
   cudart)
+
+set_target_properties(gpu_library PROPERTIES PREFIX "")

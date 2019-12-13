@@ -1,7 +1,7 @@
 import sys
 sys.path.append('./build')
 
-import gpu_library
+import libgpu_library as gpu_library
 import numpy
 
 vec = numpy.linspace(0,1,10)
