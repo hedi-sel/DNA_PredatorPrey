@@ -3,7 +3,7 @@ cd $(dirname $0)
 
 cd build &&
 make && 
-cp dna.so &&
-cd ../src &&
-python run.py
+cp dna.so ../src/ &&
+cd ../ &&
+python2.7 src/run.py
 

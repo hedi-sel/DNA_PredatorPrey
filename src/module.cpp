@@ -3,13 +3,12 @@
 
 namespace py = pybind11;
 
-// int add(int i, int j)
-// {
-//     return i + j;
-// }
+int Launch()
+{
+     launch();
+}
 
 PYBIND11_MODULE(dna, m)
 {
-     m.doc() = "pybind11 example plugin";
-     m.def("launch", &launch, "addition");
+     m.def("launch", &Launch);
 }
