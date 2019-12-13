@@ -1,0 +1,1 @@
+void launch(int argc = 0, char **argv = nullptr);
