@@ -14,3 +14,4 @@ clips/*
 **/CMakeCache.txt
 **/cmake_install.cmake
 **.gif
+src/dna.so
