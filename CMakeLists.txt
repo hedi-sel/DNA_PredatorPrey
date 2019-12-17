@@ -18,16 +18,17 @@ set (CMAKE_CUDA_STANDARD 11)
 # set (CMAKE_CUDA_FLAGS "${CMAKE_CXX_FLAGS} -dc")
 set(CMAKE_CUDA_COMPILER "nvcc")
 
+find_package(CUDA)
+find_package(PythonLibs 3.7 REQUIRED)
+
 # The following folder will be included
 include_directories("${PROJECT_SOURCE_DIR}")
 include_directories("${PYBIND11_PATH}/include")
-include_directories(${PYTHON_INCLUDE_DIRS})
+include_directories("${PYTHON_INCLUDE_DIRS}")
 include_directories("${CMAKE_SOURCE_DIR}")
 include_directories("${BOOST_ROOT}")
 link_directories(${LD_LIBRARY_PATH})
 
-find_package(CUDA)
-find_package(PythonLibs 2.7 REQUIRED)
 # add_subdirectory(${PYBIND11_PATH})
 
 file(GLOB_RECURSE sources ${SRC}/*.cu)
